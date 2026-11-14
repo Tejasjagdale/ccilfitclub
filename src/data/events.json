@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "title": "HYROX: The Gauntlet",
+    "category": "Fitness",
+    "date": "22 Nov 2026",
+    "day": "22",
+    "month": "Nov",
+    "time": "7:00 AM \u2013 12:00 PM",
+    "venue": "Arena Sports Club, Mumbai",
+    "participants": 84,
+    "capacity": 120,
+    "status": "Registration open",
+    "description": "A team fitness challenge with running and functional workout stations."
+  },
+  {
+    "id": 2,
+    "title": "The Office Chess Open",
+    "category": "Strategy",
+    "date": "29 Nov 2026",
+    "day": "29",
+    "month": "Nov",
+    "time": "10:00 AM \u2013 4:00 PM",
+    "venue": "The Commons, 5th Floor",
+    "participants": 32,
+    "capacity": 48,
+    "status": "Registration open",
+    "description": "A friendly chess competition for all experience levels."
+  },
+  {
+    "id": 3,
+    "title": "City Miles 5K",
+    "category": "Outdoor",
+    "date": "06 Dec 2026",
+    "day": "06",
+    "month": "Dec",
+    "time": "5:30 AM \u2013 9:30 AM",
+    "venue": "Bandra Promenade, Mumbai",
+    "participants": 156,
+    "capacity": 200,
+    "status": "Almost full",
+    "description": "A relaxed 5K run to get everyone moving together."
+  }
+]

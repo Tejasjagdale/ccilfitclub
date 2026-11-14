@@ -1,0 +1,74 @@
+[
+  {
+    "id": "EMP001",
+    "firstName": "Aarav",
+    "lastName": "Mehta",
+    "employeeId": "EMP001",
+    "status": "ACTIVE",
+    "team": "Engineering",
+    "department": "Platform Engineering",
+    "about": "Enjoys strength training, weekend cycling and trying new sports.",
+    "eventsJoined": [
+      "HYROX: The Gauntlet",
+      "City Miles 5K"
+    ],
+    "joinedOn": "2022"
+  },
+  {
+    "id": "EMP002",
+    "firstName": "Diya",
+    "lastName": "Shah",
+    "employeeId": "EMP002",
+    "status": "ACTIVE",
+    "team": "Design",
+    "department": "Product Design",
+    "about": "A chess enthusiast who also enjoys running with the office crew.",
+    "eventsJoined": [
+      "The Office Chess Open",
+      "City Miles 5K"
+    ],
+    "joinedOn": "2023"
+  },
+  {
+    "id": "EMP003",
+    "firstName": "Kabir",
+    "lastName": "Rao",
+    "employeeId": "EMP003",
+    "status": "ACTIVE",
+    "team": "Product",
+    "department": "Product Management",
+    "about": "Always up for a challenge, especially anything that involves a team.",
+    "eventsJoined": [
+      "HYROX: The Gauntlet"
+    ],
+    "joinedOn": "2021"
+  },
+  {
+    "id": "EMP004",
+    "firstName": "Mira",
+    "lastName": "Nair",
+    "employeeId": "EMP004",
+    "status": "RETIRED",
+    "team": "Operations",
+    "department": "Operations",
+    "about": "Former member of the events crew. A familiar face at the chess board.",
+    "eventsJoined": [
+      "The Office Chess Open"
+    ],
+    "joinedOn": "2019"
+  },
+  {
+    "id": "EMP005",
+    "firstName": "Ishaan",
+    "lastName": "Kapoor",
+    "employeeId": "EMP005",
+    "status": "ACTIVE",
+    "team": "Finance",
+    "department": "Finance",
+    "about": "Likes long-distance running, hiking and friendly competition.",
+    "eventsJoined": [
+      "City Miles 5K"
+    ],
+    "joinedOn": "2024"
+  }
+]

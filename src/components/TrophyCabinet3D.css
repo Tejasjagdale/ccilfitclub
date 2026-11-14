@@ -1,0 +1,160 @@
+.trophy-cabinet3d {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid rgba(177, 143, 92, .48);
+  border-radius: 15px;
+  color: #eee4d1;
+  background:
+    radial-gradient(ellipse at 50% -5%, rgba(192, 143, 77, .13), transparent 48%),
+    linear-gradient(145deg, #1a2223 0%, #111819 52%, #0d1416 100%);
+  box-shadow: 0 28px 75px rgba(0,0,0,.34), inset 0 1px rgba(255,255,255,.08), inset 0 -1px rgba(0,0,0,.6);
+}
+.trophy-cabinet3d::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: .32;
+  pointer-events: none;
+  background: repeating-linear-gradient(125deg, transparent 0 55px, rgba(255,255,255,.015) 56px 57px, transparent 58px 115px);
+}
+.trophy-cabinet3d__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 25px 17px;
+  border-bottom: 1px solid rgba(211, 176, 119, .2);
+  background: linear-gradient(90deg, rgba(89,55,35,.22), rgba(18,25,25,.35), rgba(89,55,35,.18));
+}
+.trophy-cabinet3d__header > div:first-child { min-width: 0; }
+.trophy-cabinet3d__eyebrow {
+  display: block;
+  margin-bottom: 6px;
+  color: #c5a56d;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .21em;
+}
+.trophy-cabinet3d__header strong {
+  display: block;
+  color: #f0e5d0;
+  font: 700 21px/1.25 Georgia, 'Times New Roman', serif;
+  letter-spacing: .015em;
+}
+.trophy-cabinet3d__header p { margin: 5px 0 0; color: #9da69f; font-size: 11px; }
+.trophy-cabinet3d__count {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 70px;
+  padding-left: 20px;
+  border-left: 1px solid rgba(211,176,119,.2);
+}
+.trophy-cabinet3d__count b { color: #e5c17c; font: 700 29px/1 Georgia, serif; text-shadow: 0 0 20px rgba(231,190,117,.25); }
+.trophy-cabinet3d__count span { margin-top: 6px; color: #929a90; font-size: 8px; font-weight: 800; letter-spacing: .17em; }
+.trophy-cabinet3d__stage {
+  position: relative;
+  width: 100%;
+  height: clamp(500px, 58vw, 760px);
+  min-height: 440px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 20%, rgba(117,142,166,.13), transparent 62%),
+    linear-gradient(180deg, #172124 0%, #101719 100%);
+  cursor: grab;
+}
+.trophy-cabinet3d__stage:active { cursor: grabbing; }
+.trophy-cabinet3d__canvas-mount { position: absolute; inset: 0; z-index: 0; }
+.trophy-cabinet3d__canvas-mount canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  outline: none;
+  touch-action: pan-y;
+}
+.trophy-cabinet3d__hint {
+  position: absolute;
+  right: 19px;
+  bottom: 17px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 11px;
+  border: 1px solid rgba(203,178,132,.21);
+  border-radius: 4px;
+  color: rgba(221,207,181,.73);
+  background: rgba(11,16,17,.68);
+  backdrop-filter: blur(10px);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .13em;
+  pointer-events: none;
+}
+.trophy-cabinet3d__hint i { width: 3px; height: 3px; border-radius: 50%; background: #b88c4b; }
+.trophy-cabinet3d__hint-dot { width: 6px; height: 6px; border-radius: 50%; background: #d5b16c; box-shadow: 0 0 9px #d5b16c; }
+.trophy-cabinet3d__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 22px 15px;
+  border-top: 1px solid rgba(211,176,119,.18);
+  color: #958b78;
+  background: rgba(8,13,14,.42);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .14em;
+}
+.trophy-cabinet3d__footer span:first-child { color: #bca276; }
+.trophy-cabinet3d__fallback {
+  position: absolute;
+  z-index: 2;
+  inset: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid rgba(211,176,119,.3);
+  background: radial-gradient(ellipse, rgba(127,92,49,.2), rgba(8,13,14,.96));
+  text-align: center;
+}
+.trophy-cabinet3d__fallback span { color: #d0ac6f; font-size: 9px; font-weight: 800; letter-spacing: .2em; }
+.trophy-cabinet3d__fallback b { color: #efe1c6; font: 700 20px Georgia,serif; }
+.trophy-cabinet3d__fallback p { max-width: 340px; color: #a8aaa2; font-size: 12px; line-height: 1.7; }
+@media (max-width: 700px) {
+  .trophy-cabinet3d { border-radius: 11px; }
+  .trophy-cabinet3d__header { padding: 16px 14px 14px; gap: 12px; }
+  .trophy-cabinet3d__header strong { font-size: 17px; }
+  .trophy-cabinet3d__header p { max-width: 245px; font-size: 10px; line-height: 1.5; }
+  .trophy-cabinet3d__count { min-width: 55px; padding-left: 12px; }
+  .trophy-cabinet3d__count b { font-size: 25px; }
+  .trophy-cabinet3d__stage { height: 590px; min-height: 500px; }
+  .trophy-cabinet3d__hint { right: 9px; bottom: 9px; gap: 6px; padding: 7px 8px; font-size: 6px; letter-spacing: .08em; }
+  .trophy-cabinet3d__footer { align-items: flex-start; flex-direction: column; padding: 12px 14px; font-size: 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .trophy-cabinet3d__canvas-mount canvas { scroll-behavior: auto; }
+}
+
+.award-dialog-visual {
+  display: grid;
+  place-items: center;
+  width: 128px;
+  height: 128px;
+  margin: 13px 0 20px;
+  border: 1px solid rgba(230,191,111,.7);
+  border-radius: 50%;
+  color: #f3d58e;
+  background: radial-gradient(circle at 34% 28%, #fae3a6 0, #c58e3e 22%, #68401f 57%, #18201d 76%);
+  box-shadow: inset 0 0 0 7px rgba(47,28,17,.52), inset 0 0 0 9px rgba(247,214,146,.45), 0 20px 35px #000a, 0 0 40px rgba(218,171,91,.2);
+  animation: award-visual-arrives .72s cubic-bezier(.16,1,.3,1) both;
+}
+.award-dialog-visual .MuiSvgIcon-root { font-size: 62px; filter: drop-shadow(0 5px 4px #4c2b13); }
+.award-dialog-visual-chess { color: #f0e5c9; background: radial-gradient(circle at 34% 28%, #f5f5ec 0, #9ea4a5 25%, #3c464a 62%, #141e24 80%); }
+.award-dialog-visual-run { background: radial-gradient(circle at 34% 28%, #fae3a6 0, #c18d43 22%, #4c2432 58%, #17232a 80%); }
+@keyframes award-visual-arrives { from { opacity: 0; transform: translateY(35px) scale(.55); filter: blur(8px); } to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }

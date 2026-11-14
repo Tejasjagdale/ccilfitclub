@@ -5,7 +5,7 @@ import EventOutlinedIcon from '@mui/icons-material/EventOutlined';
 import EmojiEventsRoundedIcon from '@mui/icons-material/EmojiEventsRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import Layout from '../components/Layout';
-import TrophyCabinet3D, { type CabinetAward } from '../components/TrophyCabinet3D';
+import TrophyCabinet, { TrophyArtwork, type CabinetAward } from '../components/TrophyCabinet';
 import people from '../data/people.json';
 
 type Award = CabinetAward;
@@ -69,7 +69,7 @@ export default function AthleteProfilePage() {
 
     {profileTab === 'cabinet' && <>
       <Box className="cabinet-heading tab-section-heading"><Box><Typography className="overline">BUILT ONE ACHIEVEMENT AT A TIME</Typography><Typography variant="h2">Trophy cabinet</Typography><Typography className="cabinet-subtitle">Every event leaves a mark. Every achievement earns its place.</Typography></Box><Box className="cabinet-total"><strong>{String(awards.length).padStart(2, '0')}</strong><span>AWARDS</span></Box></Box>
-      <TrophyCabinet3D
+      <TrophyCabinet
         awards={awards}
         collectionName={`${person.firstName.toUpperCase()}’S COLLECTION`}
         selectedAwardId={selectedAward?.id ?? null}
@@ -77,8 +77,32 @@ export default function AthleteProfilePage() {
       />
     </>}
 
-    <Dialog open={Boolean(selectedAward)} onClose={() => setSelectedAward(null)} maxWidth="sm" fullWidth PaperProps={{ className: 'award-dialog' }}>
-      {selectedAward && <><Box className="award-dialog-head"><Typography className="overline">ADDED TO THE CABINET</Typography><IconButton onClick={() => setSelectedAward(null)} aria-label="Close"><CloseRoundedIcon /></IconButton></Box><DialogContent className="award-dialog-content"><Box className={`award-dialog-visual award-dialog-visual-${selectedAward.type}`}><EmojiEventsRoundedIcon /></Box><Typography variant="h4">{selectedAward.title}</Typography><Typography className="award-dialog-event">{selectedAward.event} · {selectedAward.date}</Typography><Chip icon={<EmojiEventsRoundedIcon />} label={selectedAward.placement} className="award-dialog-chip" /><Typography className="award-dialog-detail">{selectedAward.detail}</Typography>{selectedAward.finish && <Box className="award-finish"><small>FINISH TIME</small><b>{selectedAward.finish}</b></Box>}</DialogContent></>}
+    <Dialog
+      open={Boolean(selectedAward)}
+      onClose={() => setSelectedAward(null)}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{ className: 'award-dialog' }}
+      aria-labelledby="award-dialog-title"
+    >
+      {selectedAward && <>
+        <Box className="award-dialog-head">
+          <Typography className="overline">ADDED TO THE CABINET</Typography>
+          <IconButton onClick={() => setSelectedAward(null)} aria-label="Return trophy to cabinet"><CloseRoundedIcon /></IconButton>
+        </Box>
+        <DialogContent className="award-dialog-content">
+          <Box className={`award-dialog-visual award-dialog-visual-${selectedAward.type}`}>
+            <span className="award-dialog-spotlight" />
+            <TrophyArtwork type={selectedAward.type} />
+          </Box>
+          <Typography id="award-dialog-title" variant="h4">{selectedAward.title}</Typography>
+          <Typography className="award-dialog-event">{selectedAward.event} · {selectedAward.date}</Typography>
+          <Chip icon={<EmojiEventsRoundedIcon />} label={selectedAward.placement} className="award-dialog-chip" />
+          <Typography className="award-dialog-detail">{selectedAward.detail}</Typography>
+          {selectedAward.finish && <Box className="award-finish"><small>FINISH TIME</small><b>{selectedAward.finish}</b></Box>}
+          <Button className="award-dialog-back" variant="outlined" onClick={() => setSelectedAward(null)}>Return to cabinet</Button>
+        </DialogContent>
+      </>}
     </Dialog>
   </Layout>;
 }

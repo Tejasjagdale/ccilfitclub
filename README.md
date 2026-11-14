@@ -28,4 +28,21 @@ No backend or real form submission is connected yet.
 The application uses a dark-only slate and muted teal palette. There is no light-mode toggle.
 
 ## Athlete profile experience
-The athlete profile keeps the athlete header, then separates `Trophy cabinet` and `Events participated` into tabs. The cabinet is an isolated Three.js component in `src/components/TrophyCabinet3D.tsx` with its own stylesheet. It renders a 3D collector's cabinet with wood-grain materials, inset velvet bays, carved brass detailing, drawer fronts, subdued warm spotlights, soft shadows and restrained bloom. Lighting is intentionally kept low so the wood grain, velvet backing and trophy silhouettes remain visible without blown-out highlights. The fixed HYROX cup, chess knight and race medal models are clickable; hovering lifts them into their light and selecting one animates it forward before the achievement dialog opens. Drag to inspect the cabinet from a slight angle and use the wheel/pinch to zoom. Award records are demo data in `AthleteProfilePage.tsx` and can later be replaced with API data. The cabinet uses Three.js `0.187.x` and `@types/three` `0.187.x`.
+The athlete profile keeps the athlete header, then separates `Trophy cabinet` and `Events participated` into tabs. The cabinet is an isolated, lightweight 2D SVG component in `src/components/TrophyCabinet.tsx` with its own stylesheet. It recreates the collector's cabinet as a static vector illustration: layered mahogany framing, inset velvet bays, carved brass corner details, thick shelves, drawer fronts and restrained warm spotlights. The fixed HYROX cup, chess knight and race medal artwork is drawn as vector shapes, so it stays crisp at every size without WebGL, a canvas renderer or a continuous animation loop. Hovering lifts an award into its light; selecting one animates it forward before the achievement dialog opens. Award records are demo data in `AthleteProfilePage.tsx` and can later be replaced with API data. Three.js is not required.
+
+
+### Trophy presentation
+The collector cabinet is rendered as a lightweight SVG illustration for mobile performance. Event-specific trophy artwork is shared between the shelf and award details dialog. Selecting an award lifts it from its shelf before the enlarged trophy artwork arrives in the details panel; closing the panel returns the trophy to the shelf. No WebGL or 3D rendering engine is used.
+
+
+## Trophy cabinet styles
+
+The athlete profile includes five switchable trophy cabinet finishes, all sharing the same lightweight SVG cabinet and fixed 3D-look award artwork:
+
+1. **Wooden classic** — the original carved mahogany and blue-velvet cabinet
+2. **Glass + wood** — warm oak with lightly tinted hinged glass doors
+3. **High-tech slider** — graphite/blue metal, teal lighting and animated sliding glass doors with an open/close control
+4. **Museum antique** — dark lacquer, burgundy velvet and antique-brass ornament
+5. **Performance lab** — graphite, midnight blue and restrained teal performance lighting
+
+The cabinet variants are CSS/SVG only. No WebGL, Three.js, canvas renderer or new runtime dependencies are used. The event trophy artwork and trophy-to-details dialog interaction are shared across all five variants. On mobile, the style choices become a horizontally scrollable strip.

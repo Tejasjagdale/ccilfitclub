@@ -1,0 +1,112 @@
+{
+  "hash": "1d715cd6",
+  "configHash": "aa93f5ab",
+  "lockfileHash": "7dda65fb",
+  "browserHash": "800780cb",
+  "optimized": {
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "44e575cc",
+      "needsInterop": true
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "7bfc46e6",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "22229eaa",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.mjs",
+      "file": "react-router-dom.js",
+      "fileHash": "36f42ba2",
+      "needsInterop": false
+    },
+    "@mui/material": {
+      "src": "../../node_modules/@mui/material/esm/index.js",
+      "file": "@mui_material.js",
+      "fileHash": "a7457324",
+      "needsInterop": false
+    },
+    "@mui/material/styles": {
+      "src": "../../node_modules/@mui/material/esm/styles/index.js",
+      "file": "@mui_material_styles.js",
+      "fileHash": "8a1abe73",
+      "needsInterop": false
+    },
+    "@mui/icons-material/ArrowForwardRounded": {
+      "src": "../../node_modules/@mui/icons-material/esm/ArrowForwardRounded.js",
+      "file": "@mui_icons-material_ArrowForwardRounded.js",
+      "fileHash": "940a9550",
+      "needsInterop": false
+    },
+    "@mui/icons-material/EventOutlined": {
+      "src": "../../node_modules/@mui/icons-material/esm/EventOutlined.js",
+      "file": "@mui_icons-material_EventOutlined.js",
+      "fileHash": "d6881054",
+      "needsInterop": false
+    },
+    "@mui/icons-material/GroupsOutlined": {
+      "src": "../../node_modules/@mui/icons-material/esm/GroupsOutlined.js",
+      "file": "@mui_icons-material_GroupsOutlined.js",
+      "fileHash": "d751efa3",
+      "needsInterop": false
+    },
+    "@mui/icons-material/SearchOutlined": {
+      "src": "../../node_modules/@mui/icons-material/esm/SearchOutlined.js",
+      "file": "@mui_icons-material_SearchOutlined.js",
+      "fileHash": "b7c4a4dd",
+      "needsInterop": false
+    },
+    "@mui/icons-material/EmojiEventsRounded": {
+      "src": "../../node_modules/@mui/icons-material/esm/EmojiEventsRounded.js",
+      "file": "@mui_icons-material_EmojiEventsRounded.js",
+      "fileHash": "9e9de377",
+      "needsInterop": false
+    },
+    "@mui/icons-material/CloseRounded": {
+      "src": "../../node_modules/@mui/icons-material/esm/CloseRounded.js",
+      "file": "@mui_icons-material_CloseRounded.js",
+      "fileHash": "0e73534a",
+      "needsInterop": false
+    },
+    "@mui/icons-material/PlaceOutlined": {
+      "src": "../../node_modules/@mui/icons-material/esm/PlaceOutlined.js",
+      "file": "@mui_icons-material_PlaceOutlined.js",
+      "fileHash": "ce774342",
+      "needsInterop": false
+    },
+    "@mui/icons-material/ScheduleOutlined": {
+      "src": "../../node_modules/@mui/icons-material/esm/ScheduleOutlined.js",
+      "file": "@mui_icons-material_ScheduleOutlined.js",
+      "fileHash": "bd34c1b7",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-D3BTAT4P": {
+      "file": "chunk-D3BTAT4P.js"
+    },
+    "chunk-74RSVDQ6": {
+      "file": "chunk-74RSVDQ6.js"
+    },
+    "chunk-C6WWHQR7": {
+      "file": "chunk-C6WWHQR7.js"
+    },
+    "chunk-DZ22QQML": {
+      "file": "chunk-DZ22QQML.js"
+    },
+    "chunk-N6WDTOS7": {
+      "file": "chunk-N6WDTOS7.js"
+    },
+    "chunk-ZOUFUB3M": {
+      "file": "chunk-ZOUFUB3M.js"
+    }
+  }
+}

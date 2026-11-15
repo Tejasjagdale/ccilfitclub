@@ -775,3 +775,237 @@ body, .site { background: var(--pace-canvas) !important; color: var(--pace-ink) 
   .category-card { min-height: 190px; }
   .participation-item { border-radius: 11px !important; }
 }
+
+
+/* =========================================================
+   OFF•PACE responsive pass — tablet, phone and small phones
+   ========================================================= */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body { min-width: 320px; overflow-x: hidden; }
+img, svg, video, canvas { max-width: 100%; }
+button, a, input, select, textarea { touch-action: manipulation; }
+a, button, .MuiButtonBase-root { -webkit-tap-highlight-color: transparent; }
+.page-container { width: 100%; min-width: 0; }
+.page-container > * { min-width: 0; }
+.MuiPaper-root { min-width: 0; }
+.MuiTypography-root { overflow-wrap: anywhere; }
+.MuiButton-root { min-height: 40px; }
+.MuiChip-root { max-width: 100%; }
+.MuiChip-label { white-space: normal; }
+
+/* Tablet and below */
+@media (max-width: 900px) {
+  .page-container { padding-left: 24px !important; padding-right: 24px !important; }
+  .toolbar { flex-wrap: wrap; row-gap: 8px; padding: 10px 0 !important; }
+  .nav { gap: 4px !important; }
+  .competition-summary-grid, .admin-stats { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .results-record-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .admin-main-grid, .admin-content-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .event-history-controls { gap: 14px; flex-wrap: wrap; }
+  .event-history-controls > * { min-width: 0; }
+  .profile-hero { gap: 18px !important; }
+  .trophy-cabinet { max-width: 100%; }
+}
+
+/* Phones */
+@media (max-width: 600px) {
+  body { font-size: 14px; }
+  .appbar .MuiContainer-root, .page-container, .footer .MuiContainer-root {
+    padding-left: 16px !important; padding-right: 16px !important;
+  }
+  .toolbar {
+    min-height: 0 !important; display: grid !important;
+    grid-template-columns: 1fr auto; gap: 8px 10px !important;
+    padding: 10px 0 !important;
+  }
+  .brand { font-size: 20px !important; }
+  .nav {
+    grid-column: 1 / -1; grid-row: 2;
+    display: flex !important; width: 100%; min-width: 0;
+    overflow-x: auto; overflow-y: hidden; white-space: nowrap;
+    gap: 6px !important; padding: 2px 0 4px;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav .MuiButton-root {
+    flex: 0 0 auto; min-width: max-content; min-height: 38px !important;
+    padding: 7px 12px !important; font-size: 12px !important;
+  }
+  .nav-user {
+    grid-column: 2; grid-row: 1; gap: 6px !important;
+    font-size: 12px !important; min-width: 0;
+  }
+  .nav-user .MuiAvatar-root { width: 30px !important; height: 30px !important; }
+  .nav-user .MuiButton-root { min-width: 0; padding: 5px 7px !important; font-size: 11px !important; }
+  .page-container { padding-top: 20px !important; padding-bottom: 28px !important; }
+  .page-heading { margin-bottom: 20px !important; }
+  .page-heading h1, .home-events-heading h1 { font-size: clamp(28px, 8vw, 36px) !important; line-height: 1.08 !important; }
+  .page-heading > p:last-child, .home-events-heading > p { font-size: 13px !important; line-height: 1.5 !important; }
+  .overline { letter-spacing: .12em !important; font-size: 9px !important; }
+
+  /* Stack all common grids without squeezing cards */
+  .competition-summary-grid, .admin-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+  .competition-summary-grid .MuiPaper-root, .admin-stats .MuiPaper-root {
+    min-height: 82px !important; padding: 13px !important; border-radius: 13px !important;
+  }
+  .competition-summary-grid b, .admin-stats b { font-size: 25px !important; }
+  .competition-summary-grid span, .admin-stats span { font-size: 11px !important; line-height: 1.3; }
+  .category-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 12px !important; }
+  .category-card { min-height: 0 !important; padding: 17px !important; border-radius: 14px !important; }
+  .category-card h5 { font-size: 19px !important; }
+  .category-card p { font-size: 12px !important; line-height: 1.45 !important; }
+  .category-bottom { margin-top: 18px !important; padding-top: 12px !important; font-size: 10px !important; }
+  .competition-summary-grid + .category-grid { margin-top: 18px !important; }
+
+  /* Athlete directory becomes readable cards, not a compressed table */
+  .directory-tools { display: flex !important; flex-direction: column !important; align-items: stretch !important; gap: 12px !important; }
+  .directory-tools > .MuiTextField-root { width: 100% !important; }
+  .status-filters { display: flex !important; flex-wrap: wrap; gap: 7px !important; }
+  .athlete-table { overflow: visible !important; background: transparent !important; border: 0 !important; box-shadow: none !important; }
+  .athlete-table-head { display: none !important; }
+  .athlete-row {
+    display: grid !important; grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 8px 10px !important; align-items: center !important;
+    padding: 13px !important; margin-bottom: 9px !important;
+    border: 1px solid var(--pace-line) !important; border-radius: 13px !important;
+    background: #fff !important; min-height: 72px;
+  }
+  .athlete-name-cell { min-width: 0; }
+  .athlete-name-cell b { font-size: 13px !important; }
+  .athlete-name-cell small { font-size: 10px !important; }
+  .team-cell { grid-column: 1; padding-left: 48px; font-size: 11px !important; }
+  .athlete-row > .MuiBox:not(.athlete-name-cell) { grid-column: 2; grid-row: 1; }
+  .view-profile { grid-column: 2; grid-row: 2; font-size: 11px !important; white-space: nowrap; }
+
+  /* Home event list */
+  .home-events-panel { border-radius: 14px !important; }
+  .home-events-tabs .MuiTab-root { min-width: 0 !important; flex: 1; padding: 12px 8px !important; font-size: 12px !important; }
+  .home-event-row {
+    display: grid !important; grid-template-columns: 48px minmax(0,1fr) auto !important;
+    gap: 9px !important; align-items: center !important; padding: 12px 10px !important;
+  }
+  .home-event-date { width: 44px !important; min-width: 44px !important; }
+  .home-event-copy { min-width: 0; }
+  .home-event-name { font-size: 13px !important; line-height: 1.3 !important; }
+  .home-event-meta { font-size: 10px !important; line-height: 1.4 !important; display: flex; flex-wrap: wrap; gap: 3px 5px; }
+  .home-event-row > .MuiChip-root { grid-column: 2; justify-self: start; }
+  .home-event-open { grid-column: 3; grid-row: 1 / span 2; min-width: 0 !important; padding: 5px !important; font-size: 11px !important; }
+
+  /* Profile header, tabs and participation */
+  .profile-hero {
+    display: grid !important; grid-template-columns: 58px minmax(0,1fr) !important;
+    gap: 12px !important; padding: 16px !important; border-radius: 15px !important;
+  }
+  .profile-avatar { width: 56px !important; height: 56px !important; font-size: 17px !important; }
+  .profile-heading { min-width: 0; }
+  .profile-heading h1 { font-size: clamp(22px, 6vw, 29px) !important; line-height: 1.12 !important; }
+  .profile-heading p { font-size: 11px !important; }
+  .profile-hero > .MuiChip-root { grid-column: 2; justify-self: start; }
+  .profile-tabs-shell { margin-top: 13px !important; overflow: hidden; }
+  .profile-tabs { min-height: 52px !important; }
+  .profile-tabs .MuiTabs-flexContainer { width: 100%; }
+  .profile-tabs .MuiTab-root {
+    flex: 1; min-width: 0 !important; min-height: 52px !important;
+    padding: 8px 5px !important; font-size: 10px !important;
+  }
+  .profile-tabs .MuiTab-iconWrapper { margin-right: 4px !important; }
+  .profile-section-heading, .cabinet-heading, .profile-section-heading.tab-section-heading {
+    align-items: flex-start !important; gap: 12px !important; flex-wrap: wrap !important;
+  }
+  .profile-section-heading h2, .cabinet-heading h2 { font-size: 24px !important; }
+  .cabinet-subtitle { font-size: 12px !important; line-height: 1.45 !important; }
+  .cabinet-total { margin-left: auto; padding-left: 12px !important; }
+  .cabinet-total strong { font-size: 27px !important; }
+  .participation-list { gap: 9px !important; }
+  .participation-item {
+    display: grid !important; grid-template-columns: 24px 38px minmax(0,1fr) !important;
+    gap: 9px !important; padding: 12px !important; min-width: 0;
+  }
+  .participation-index { font-size: 10px !important; }
+  .participation-symbol { width: 36px !important; height: 36px !important; }
+  .participation-copy { min-width: 0; }
+  .participation-copy b { font-size: 12px !important; line-height: 1.35 !important; }
+  .participation-copy small { font-size: 10px !important; }
+  .participation-item .MuiChip-root { grid-column: 3; justify-self: start; }
+
+  /* Event detail and standings */
+  .event-detail-hero { display: flex !important; flex-wrap: wrap !important; gap: 12px !important; padding: 17px !important; }
+  .event-detail-hero > div { flex: 1 1 calc(100% - 60px); min-width: 0; }
+  .event-detail-hero h1 { font-size: 30px !important; }
+  .event-detail-hero > .MuiChip-root { margin-left: 0 !important; }
+  .event-history-controls { display: flex !important; flex-direction: column !important; align-items: stretch !important; gap: 12px !important; }
+  .event-history-controls h2 { font-size: 22px !important; }
+  .event-history-controls .MuiFormControl-root, .event-history-controls .MuiInputBase-root { width: 100% !important; }
+  .competition-pills { display: flex !important; overflow-x: auto; gap: 7px !important; padding-bottom: 5px; }
+  .competition-pills .MuiButton-root { flex: 0 0 auto; white-space: nowrap; }
+  .competition-detail-card { padding: 15px !important; }
+  .competition-detail-title { align-items: flex-start !important; flex-wrap: wrap !important; gap: 8px !important; }
+  .competition-detail-title h4 { font-size: 20px !important; }
+  .competition-meta { display: grid !important; grid-template-columns: minmax(0,1fr) !important; gap: 8px !important; }
+  .registration-banner { display: flex !important; flex-direction: column !important; align-items: stretch !important; gap: 12px !important; padding: 13px !important; }
+  .registration-banner .MuiButton-root { width: 100%; }
+  .panel-heading { gap: 8px !important; align-items: flex-start !important; }
+  .panel-heading h5 { font-size: 18px !important; }
+  .standings-table { overflow-x: auto; }
+  .standings-head, .standing-row {
+    min-width: 440px;
+    grid-template-columns: 42px minmax(130px,1fr) 90px 75px !important;
+    gap: 8px !important;
+  }
+  .standing-row { padding: 11px 8px !important; }
+  .record-item { grid-template-columns: 36px minmax(0,1fr) auto !important; gap: 9px !important; }
+  .record-item > strong { font-size: 14px !important; }
+
+  /* Admin: stack controls, forms and lists */
+  .admin-section { padding: 15px !important; }
+  .admin-section-title { align-items: flex-start !important; flex-wrap: wrap !important; gap: 10px !important; }
+  .admin-section-title h2 { font-size: 21px !important; }
+  .admin-form-grid { grid-template-columns: minmax(0,1fr) !important; gap: 12px !important; }
+  .admin-form-grid > * { min-width: 0 !important; width: 100% !important; }
+  .admin-toolbar, .admin-actions, .status-actions, .form-actions {
+    display: flex !important; flex-wrap: wrap !important; gap: 8px !important;
+  }
+  .admin-toolbar > *, .form-actions > .MuiButton-root { flex: 1 1 auto; }
+  .admin-result-list > div { display: flex !important; flex-wrap: wrap !important; gap: 8px !important; }
+  .admin-deadline-editor { display: flex !important; flex-wrap: wrap !important; gap: 8px !important; }
+  .admin-deadline-editor .MuiTextField-root { flex: 1 1 100%; min-width: 0; }
+
+  /* Sign-in and dialogs */
+  .auth-page { min-height: auto !important; padding: 16px 0 28px !important; }
+  .auth-card { width: 100% !important; max-width: 100% !important; padding: 22px !important; }
+  .auth-card h1 { font-size: 32px !important; }
+  .MuiDialog-container { align-items: flex-end !important; }
+  .MuiDialog-paper { width: calc(100% - 20px) !important; max-width: none !important; margin: 10px !important; max-height: calc(100% - 20px) !important; border-radius: 18px 18px 12px 12px !important; }
+  .award-dialog-content { padding: 18px !important; }
+  .footer .MuiContainer-root { display: flex !important; flex-direction: column !important; gap: 5px !important; padding-top: 15px !important; padding-bottom: 15px !important; }
+  .footer span { font-size: 11px !important; }
+}
+
+/* Very narrow phones */
+@media (max-width: 380px) {
+  .appbar .MuiContainer-root, .page-container, .footer .MuiContainer-root { padding-left: 12px !important; padding-right: 12px !important; }
+  .nav-user > span { display: none; }
+  .competition-summary-grid, .admin-stats { grid-template-columns: minmax(0,1fr) minmax(0,1fr) !important; }
+  .competition-summary-grid .MuiPaper-root, .admin-stats .MuiPaper-root { padding: 10px !important; }
+  .competition-summary-grid b, .admin-stats b { font-size: 22px !important; }
+  .profile-heading h1 { font-size: 21px !important; }
+  .home-event-row { grid-template-columns: 42px minmax(0,1fr) auto !important; gap: 7px !important; }
+  .home-event-date { width: 40px !important; min-width: 40px !important; }
+  .home-event-open { font-size: 10px !important; }
+}
+
+/* Trophy cabinet stays a single wooden cabinet and scales to the viewport. */
+.trophy-cabinet { width: 100% !important; max-width: 100% !important; overflow: hidden !important; }
+.trophy-cabinet svg { max-width: 100%; }
+@media (max-width: 600px) {
+  .trophy-cabinet { border-radius: 12px !important; }
+  .trophy-cabinet__header { padding: 14px !important; gap: 10px !important; }
+  .trophy-cabinet__header h2 { font-size: 18px !important; }
+  .trophy-cabinet__count { min-width: 50px !important; }
+  .trophy-cabinet__shelf { padding: 10px !important; }
+  .cabinet-award { min-width: 0 !important; }
+}

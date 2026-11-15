@@ -41,8 +41,8 @@ function AppRoutes() {
     <Route path="/" element={<RequireAuth><RoleLanding /></RequireAuth>} />
     <Route path="/athletes" element={<RequireAuth><AthletesPage /></RequireAuth>} />
     <Route path="/athletes/:employeeId" element={<RequireAuth><AthleteProfilePage /></RequireAuth>} />
-    {/* The event-category index and control room are administrator-only. */}
-    <Route path="/events" element={<RequireAdmin><EventsPage /></RequireAdmin>} />
+    {/* Athletes can browse competitions open for registration; admins retain the full event index. */}
+    <Route path="/events" element={<RequireAuth><EventsPage /></RequireAuth>} />
     {/* Athletes can open a competition from the Home live/previous lists to view standings and register. */}
     <Route path="/events/:eventId" element={<RequireAuth><EventDetailPage /></RequireAuth>} />
     <Route path="/admin" element={<RequireAdmin><AdminPage /></RequireAdmin>} />

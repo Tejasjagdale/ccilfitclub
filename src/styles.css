@@ -328,3 +328,450 @@ body, .site { background: #141b1e !important; color: #e7eeeb !important; }
 .admin-deadline-editor { display:flex; align-items:center; gap:10px; margin:14px 0 8px; padding:13px; border:1px solid #344448; border-radius:9px; background:#192427; }
 .admin-deadline-editor button { border-color:#6c9483; color:#b9d0c4; white-space:nowrap; }
 @media(max-width:600px) { .admin-deadline-editor { align-items:stretch; flex-direction:column; } }
+
+/* OFF•PACE visual refresh — energetic midnight club palette */
+:root {
+  --pace-bg: #0b1020;
+  --pace-surface: #141d31;
+  --pace-surface-raised: #192640;
+  --pace-border: #2a3957;
+  --pace-text: #f3f6ff;
+  --pace-muted: #a5b1ca;
+  --pace-lime: #c9f36a;
+  --pace-cyan: #62dfd2;
+  --pace-coral: #ff927a;
+}
+html, body, #root { min-height: 100%; }
+body { background: var(--pace-bg) !important; color: var(--pace-text) !important; font-family: 'DM Sans', 'Arial', sans-serif; }
+.site {
+  color: var(--pace-text);
+  background:
+    radial-gradient(ellipse at 8% 0%, rgba(74, 111, 190, .19), transparent 34rem),
+    radial-gradient(ellipse at 94% 12%, rgba(45, 198, 181, .10), transparent 30rem),
+    var(--pace-bg) !important;
+}
+.appbar {
+  color: var(--pace-text) !important;
+  background: rgba(12, 18, 35, .88) !important;
+  border-bottom: 1px solid rgba(117, 145, 195, .2) !important;
+  backdrop-filter: blur(16px);
+}
+.toolbar { min-height: 72px !important; }
+.brand { color: #f6f8ff !important; font-size: 19px !important; letter-spacing: -.075em !important; }
+.brand span { color: var(--pace-lime) !important; }
+.nav { gap: 6px; }
+.nav button { color: #aab7d1 !important; border-radius: 9px; transition: .18s ease; }
+.nav button:hover { color: #fff !important; background: rgba(255,255,255,.06); }
+.nav button.nav-active { color: var(--pace-lime) !important; background: rgba(201,243,106,.11) !important; box-shadow: inset 0 0 0 1px rgba(201,243,106,.18); }
+.nav-user { color: #d8e0f3 !important; }
+.nav-user .MuiAvatar-root { background: linear-gradient(145deg,#536fbd,#2a9c9a) !important; color: white; }
+.nav-user button { color: var(--pace-lime) !important; }
+.page-container { padding-top: 36px; padding-bottom: 76px; }
+.page-heading h1, .home-intro h1, .home-events-heading h1 { color: #f4f6ff !important; }
+.page-heading > p:last-child, .home-events-heading p, .intro-copy { color: var(--pace-muted) !important; }
+.overline { color: var(--pace-cyan) !important; }
+.home-intro h1 span { color: var(--pace-lime) !important; }
+.home-intro { border-color: var(--pace-border) !important; }
+.section-heading h2, .metric, .profile-heading h1 { color: #f1f5ff !important; }
+.section-heading button, .overview-card button { color: var(--pace-lime) !important; }
+.overview-card, .upcoming-row, .event-list-card, .profile-card, .profile-section,
+.athlete-table, .home-events-panel, .competition-detail-card, .results-panel,
+.records-panel, .admin-form-card {
+  color: var(--pace-text) !important;
+  background: linear-gradient(145deg, rgba(26,39,64,.96), rgba(18,28,47,.98)) !important;
+  border: 1px solid var(--pace-border) !important;
+  border-radius: 15px !important;
+  box-shadow: 0 12px 34px rgba(0,0,0,.17), inset 0 1px 0 rgba(255,255,255,.025);
+}
+.overview-card:hover, .upcoming-row:hover, .event-list-card:hover, .category-card:hover {
+  border-color: rgba(201,243,106,.52) !important;
+  box-shadow: 0 16px 38px rgba(0,0,0,.24), 0 0 0 1px rgba(201,243,106,.08);
+}
+.overview-icon, .date-block, .event-date, .category-icon {
+  color: var(--pace-lime) !important;
+  background: linear-gradient(145deg, rgba(201,243,106,.17), rgba(98,223,210,.10)) !important;
+  border: 1px solid rgba(201,243,106,.16);
+}
+.metric { font-size: 34px !important; }
+.metric-label, .upcoming-count, .event-details, .team-cell { color: var(--pace-muted) !important; }
+.event-title-line h5, .athlete-name-cell b, .profile-section h6, .panel-heading h5,
+.competition-detail-title h4, .category-card h5, .admin-section-title h2 { color: #f3f6ff !important; }
+.event-details svg, .profile-events-title { color: var(--pace-cyan) !important; }
+.status-filters .MuiChip-root, .competition-pills button {
+  color: #b9c6df !important; background: #192640 !important; border-color: #344766 !important;
+}
+.status-filters .filter-selected, .competition-pills button.pill-active {
+  color: var(--pace-lime) !important; background: rgba(201,243,106,.12) !important; border-color: rgba(201,243,106,.4) !important;
+}
+.directory-tools .MuiOutlinedInput-root, .filter-row .MuiOutlinedInput-root,
+.event-history-controls .MuiOutlinedInput-root, .admin-form-grid .MuiOutlinedInput-root,
+.admin-control-top .MuiOutlinedInput-root {
+  color: #edf2ff !important; background: #111b30 !important; border-radius: 10px !important;
+}
+.MuiOutlinedInput-notchedOutline { border-color: #344766 !important; }
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline { border-color: #7184ad !important; }
+.MuiInputLabel-root { color: #a5b1ca !important; }
+.athlete-table-head { color: #8fa2c4 !important; background: #1c2a44 !important; }
+.athlete-row { border-color: #2b3a58 !important; }
+.athlete-row:hover { background: rgba(98,223,210,.055) !important; }
+.athlete-name-cell b { color: #f2f5ff !important; }
+.athlete-name-cell small, .profile-facts small { color: #98a8c6 !important; }
+.athlete-avatar { color: #101a2d !important; font-weight: 800 !important; }
+.tone-0 { background: #c9f36a !important; }.tone-1 { background: #9e9af5 !important; }.tone-2 { background: #ffb27e !important; }.tone-3 { background: #71ded1 !important; }.tone-4 { background: #8eb9ff !important; }
+.status-active { color: #d8ff9a !important; background: rgba(142,205,75,.17) !important; }
+.status-retired { color: #c3cbe0 !important; background: rgba(160,171,198,.15) !important; }
+.view-profile, .back-link { color: var(--pace-cyan) !important; }
+.view-profile:hover, .back-link:hover { color: var(--pace-lime) !important; }
+.profile-facts { border-color: var(--pace-border) !important; }
+.profile-facts b, .joined-event { color: #dce5fa !important; }
+.joined-event { border-color: var(--pace-border) !important; }
+.joined-event span:last-child { color: var(--pace-cyan) !important; }
+.footer { color: #8493b1 !important; background: rgba(10,16,31,.9) !important; border-color: var(--pace-border) !important; }
+.footer span:first-child { color: var(--pace-lime) !important; }
+.MuiButton-contained, .intro-actions .MuiButton-contained, .form-actions .MuiButton-contained,
+.registration-banner .MuiButton-contained, .status-actions .MuiButton-contained,
+.admin-shortcut button {
+  color: #101827 !important;
+  background: linear-gradient(115deg, #d4fa7c, #a8e9a0) !important;
+  font-weight: 800 !important;
+  box-shadow: 0 7px 20px rgba(169,226,107,.15) !important;
+}
+.MuiButton-contained:hover { background: linear-gradient(115deg,#e1ff9b,#b9f2b0) !important; box-shadow: 0 9px 24px rgba(169,226,107,.24) !important; }
+.MuiButton-outlined { color: var(--pace-cyan) !important; border-color: rgba(98,223,210,.42) !important; }
+.MuiButton-text { color: var(--pace-cyan) !important; }
+.MuiTabs-indicator { background: var(--pace-lime) !important; height: 3px !important; }
+.home-events-tabs { border-color: var(--pace-border) !important; }
+.home-events-tabs .MuiTab-root { color: #9eacc8 !important; }
+.home-events-tabs .Mui-selected { color: var(--pace-lime) !important; }
+.home-event-row { border-color: #2b3a58 !important; }
+.home-event-date { border-color: rgba(201,243,106,.25) !important; background: rgba(201,243,106,.09) !important; }
+.home-event-date strong { color: var(--pace-lime) !important; }
+.home-event-date span, .home-event-meta { color: #a7b5d0 !important; }
+.home-event-name { color: #f1f5ff !important; }
+.home-event-open { color: var(--pace-cyan) !important; }
+.home-event-status-chip { color: #d4e2ff !important; border-color: #405273 !important; background: #263653 !important; }
+.home-event-live-chip { color: #ffc1b2 !important; border-color: #8d554b !important; background: #472d35 !important; }
+.category-card { background: linear-gradient(145deg,#1d2c49,#141f36) !important; border-color: #304363 !important; }
+.category-card p, .category-bottom, .competition-meta, .competition-summary-grid span, .admin-stats span { color: #a5b4cf !important; }
+.competition-summary-grid .MuiPaper-root, .admin-stats .MuiPaper-root { background: linear-gradient(145deg,#1d2c49,#141f36) !important; border-color: #304363 !important; }
+.competition-summary-grid b, .admin-stats b { color: var(--pace-lime) !important; }
+.event-detail-hero, .admin-shortcut { background: linear-gradient(110deg,#1b2e4b,#17243c) !important; border-color: #344969 !important; }
+.event-detail-hero h1 { color: #f3f6ff !important; }
+.standings-head, .standing-row, .record-item, .admin-user-list > div, .admin-subsection-title { border-color: #30415f !important; }
+.standing-row { color: #e6edff !important; }
+.standing-row > strong, .record-item > strong { color: var(--pace-lime) !important; }
+.rank { background: #263653 !important; color: #d7e2fa !important; }
+.rank-1 { background: #5c512b !important; color: #ffdf86 !important; }
+.rank-2 { background: #3b4d66 !important; color: #e3edff !important; }
+.rank-3 { background: #61402f !important; color: #ffc49b !important; }
+.registration-banner { background: rgba(98,223,210,.08) !important; border-color: rgba(98,223,210,.3) !important; }
+.registration-banner b, .admin-shortcut h5 { color: #eff5ff !important; }
+.registration-banner span, .admin-shortcut p { color: #aab9d4 !important; }
+.admin-form-grid .MuiInputLabel-root { color: #aab9d4 !important; }
+.admin-help, .form-actions p { color: #9cabc7 !important; }
+.empty-results { background: #141f35 !important; border-color: #405273 !important; color: #e3ebff !important; }
+.empty-results small { color: #a4b3cf !important; }
+.MuiDialog-paper, .award-dialog { color: #f2f5ff !important; }
+@media(max-width:700px) {
+  .toolbar { gap: 8px; }
+  .nav button { padding: 7px 9px; }
+  .page-container { padding-top: 24px; }
+  .home-events-page { margin-top: 26px; }
+}
+@media(prefers-reduced-motion:no-preference) {
+  .overview-card, .event-list-card, .category-card, .upcoming-row, .athlete-row, .MuiButton-root { transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+  .category-card:hover { transform: translateY(-4px); }
+}
+
+
+/* OFF•PACE — vibrant club palette inspired by bold editorial sports apps */
+:root { --ink:#211d24; --muted:#786d70; --paper:#fff8f2; --coral:#d66e4f; --coral-deep:#b94f35; --lilac:#a77bc1; --butter:#f0cf72; --mint:#8db8a0; --line:#eadbd2; }
+html, body, #root { min-height:100%; }
+body { background:#fff6ef !important; color:var(--ink) !important; }
+.site { background:radial-gradient(ellipse at 92% 0%,#f8dfd2 0,transparent 32%),#fff6ef !important; color:var(--ink) !important; }
+.appbar { background:#211d24 !important; color:#fffaf5 !important; border:0 !important; box-shadow:0 8px 26px #3b21140d !important; }
+.toolbar { min-height:72px !important; }
+.brand { color:#fffaf5 !important; font-size:21px !important; letter-spacing:-.075em !important; }
+.brand span { color:#f0cf72 !important; }
+.nav button { color:#d9cdd0 !important; border-radius:999px !important; padding:9px 15px !important; }
+.nav button:hover,.nav button.nav-active { color:#211d24 !important; background:#f0cf72 !important; }
+.nav-user { color:#f8eae2 !important; }
+.nav-user .MuiAvatar-root { background:#a77bc1 !important; color:#211d24 !important; }
+.header-action { border-color:#f0cf72 !important; color:#f0cf72 !important; }
+.page-container { padding-top:32px !important; padding-bottom:76px !important; }
+.overline { color:#b65b42 !important; letter-spacing:.16em !important; }
+.page-heading h1,.home-intro h1,.home-events-heading h1 { color:#211d24 !important; }
+.home-intro { border-color:#eadbd2 !important; }
+.home-intro h1 span { color:#d66e4f !important; }
+.intro-copy,.page-heading>p:last-child { color:#786d70 !important; }
+.intro-actions .MuiButton-contained,.MuiButton-containedPrimary { background:#d66e4f !important; color:white !important; box-shadow:0 7px 18px #d66e4f30 !important; }
+.intro-actions .MuiButton-contained:hover,.MuiButton-containedPrimary:hover { background:#b94f35 !important; }
+.intro-actions .MuiButton-text,.section-heading button { color:#b6533b !important; }
+.overview-card,.upcoming-row,.event-list-card,.profile-card,.profile-section,.athlete-table,.home-events-panel,.competition-detail-card,.results-panel,.records-panel,.admin-form-card,.competition-summary-grid .MuiPaper-root,.admin-stats .MuiPaper-root { background:#fff !important; color:#211d24 !important; border:1px solid #eadbd2 !important; border-radius:16px !important; box-shadow:0 8px 24px #6b3d2510 !important; }
+.overview-card { transition:transform .18s,box-shadow .18s; }.overview-card:hover,.upcoming-row:hover,.event-list-card:hover { transform:translateY(-2px); box-shadow:0 14px 30px #6b3d2518 !important; }
+.overview-icon,.date-block,.event-date { background:#fbe5da !important; color:#b94f35 !important; border-radius:12px !important; }
+.metric,.section-heading h2,.profile-heading h1 { color:#211d24 !important; }
+.metric-label,.upcoming-count,.event-details,.team-cell { color:#786d70 !important; }
+.section-heading h2 { font-size:25px !important; }
+.page-heading h1 { color:#211d24 !important; }
+.filter-row .MuiOutlinedInput-root,.directory-tools .MuiOutlinedInput-root,.MuiOutlinedInput-root,.admin-form-grid .MuiOutlinedInput-root,.admin-control-top .MuiOutlinedInput-root,.event-history-controls .MuiOutlinedInput-root { background:#fff !important; color:#211d24 !important; }
+.MuiInputLabel-root { color:#786d70 !important; }
+.MuiOutlinedInput-notchedOutline { border-color:#dfcec4 !important; }
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline { border-color:#d66e4f !important; }
+.athlete-table { overflow:hidden; }
+.athlete-table-head { background:#f7e8df !important; color:#a45a45 !important; }
+.athlete-row { border-color:#f0e5df !important; color:#211d24 !important; }
+.athlete-row:hover { background:#fff7f1 !important; }
+.athlete-name-cell b,.profile-section h6,.profile-heading h1,.event-title-line h5,.competition-detail-title h4,.admin-section-title h2 { color:#211d24 !important; }
+.athlete-name-cell small,.profile-facts small { color:#8a7d7c !important; }
+.tone-0 { background:#dceee3 !important; color:#315c47 !important; }.tone-1 { background:#eadcf2 !important; color:#654779 !important; }.tone-2 { background:#f6e8bc !important; color:#765a20 !important; }.tone-3 { background:#d9e8ef !important; color:#365b70 !important; }.tone-4 { background:#f4d9cf !important; color:#884b3b !important; }
+.status-filters .MuiChip-root { background:#fff !important; border:1px solid #eadbd2 !important; color:#786d70 !important; }.status-filters .filter-selected { background:#f8e2d8 !important; border-color:#e7b7a5 !important; color:#a84931 !important; }
+.status-active { background:#e0f1e5 !important; color:#32704c !important; }.status-retired { background:#eee9e6 !important; color:#746c68 !important; }
+.status-open { background:#e1f1e6 !important; color:#32704c !important; }.status-warn { background:#fff0cf !important; color:#8b641e !important; }
+.event-details svg { color:#c56a4d !important; }
+.back-link,.view-profile { color:#b6533b !important; }
+.profile-avatar { background:#f4d9cf !important; color:#9b4e39 !important; }
+.profile-facts { border-color:#eee2dc !important; }.profile-facts b,.joined-event { color:#51464a !important; }.joined-event { border-color:#eee2dc !important; }
+.footer { background:#211d24 !important; border:0 !important; color:#c9babe !important; }.footer span:first-child { color:#f0cf72 !important; }
+.category-card { background:linear-gradient(145deg,#f3d5c9,#e9b7a7) !important; color:#30212a !important; border:0 !important; box-shadow:0 12px 28px #7b3f2918 !important; }
+.category-card:nth-child(3n+2) { background:linear-gradient(145deg,#e7d6f0,#c9a9dc) !important; }
+.category-card:nth-child(3n) { background:linear-gradient(145deg,#f7e7b5,#efd27c) !important; }
+.category-card h5,.category-card p,.category-bottom { color:#35262d !important; }
+.category-icon { background:#ffffff80 !important; color:#392832 !important; }
+.quiet-chip { background:#f0e9e4 !important; color:#675c5e !important; }.live-chip { background:#ffe0d3 !important; color:#a5422e !important; }.complete-chip { background:#e0f1e5 !important; color:#32704c !important; }
+.event-detail-hero,.admin-shortcut { background:linear-gradient(110deg,#f3d5c9,#f8e8c9) !important; border:0 !important; border-radius:17px !important; color:#30212a !important; }.event-detail-hero h1,.admin-shortcut h5 { color:#30212a !important; }.admin-shortcut p { color:#705c5b !important; }
+.competition-summary-grid .MuiPaper-root:nth-child(4n+1),.admin-stats .MuiPaper-root:nth-child(4n+1) { background:#f5d7cb !important; }.competition-summary-grid .MuiPaper-root:nth-child(4n+2),.admin-stats .MuiPaper-root:nth-child(4n+2) { background:#e9daf1 !important; }.competition-summary-grid .MuiPaper-root:nth-child(4n+3),.admin-stats .MuiPaper-root:nth-child(4n+3) { background:#f7e9bd !important; }.competition-summary-grid .MuiPaper-root:nth-child(4n),.admin-stats .MuiPaper-root:nth-child(4n) { background:#dcece1 !important; }
+.competition-summary-grid b,.admin-stats b { color:#30212a !important; }.competition-summary-grid span,.admin-stats span { color:#6e5d60 !important; }
+.competition-pills button { border-color:#e4d2c8 !important; color:#786d70 !important; }.competition-pills button.pill-active { background:#f8e2d8 !important; border-color:#e7b7a5 !important; color:#a84931 !important; }
+.registration-banner { background:#e5f1e8 !important; border-color:#c7dfce !important; }.registration-banner b { color:#315c47 !important; }.registration-banner span { color:#587563 !important; }
+.panel-heading h5 { color:#30212a !important; }.panel-heading>svg { color:#d19a35 !important; }
+.standing-row { color:#30212a !important; border-color:#eee2dc !important; }.standing-row small,.standing-row>span { color:#827477 !important; }.standing-row>strong { color:#a64f38 !important; }
+.rank { background:#f0e8e3 !important; color:#64585a !important; }.rank-1 { background:#f5e2a7 !important; color:#775617 !important; }.rank-2 { background:#e4e9ec !important; color:#53616a !important; }.rank-3 { background:#f2d7c7 !important; color:#8a5036 !important; }
+.record-item { border-color:#eee2dc !important; }.record-item b { color:#30212a !important; }.record-item small,.record-item p { color:#827477 !important; }.record-item>strong { color:#a65d38 !important; }.record-medal { background:#f7e9bd !important; color:#946b1c !important; }
+.empty-results { background:#fffaf6 !important; border-color:#e6d3c8 !important; color:#55494b !important; }.empty-results small { color:#827477 !important; }
+.admin-form-grid .MuiInputLabel-root { color:#786d70 !important; }.admin-form-grid .MuiOutlinedInput-notchedOutline { border-color:#dfcec4 !important; }.status-actions .MuiButton-root { border-color:#dfcec4 !important; color:#786d70 !important; }.status-actions .MuiButton-contained,.registration-banner .MuiButton-contained,.form-actions .MuiButton-contained { background:#d66e4f !important; color:#fff !important; }
+.admin-result-list>div { background:#fff4ec !important; }.admin-result-list b { color:#30212a !important; }.admin-result-list span { color:#827477 !important; }
+.demo-login-note { background:#f8eee3 !important; border-color:#e9d8c7 !important; }.demo-login-note b { color:#6b4e2b !important; }.demo-login-note span { color:#705e53 !important; }.demo-login-note small { color:#8b7c70 !important; }
+.home-events-panel { background:#fff !important; }.home-events-tabs .Mui-selected { color:#b6533b !important; }.home-events-tabs .MuiTabs-indicator { background:#d66e4f !important; }.home-event-date { background:#fbe5da !important; border-color:#f0c6b5 !important; }.home-event-date span,.home-event-meta { color:#866f70 !important; }.home-event-name { color:#30212a !important; }.home-event-status-chip { color:#6d6263 !important; border-color:#eadbd2 !important; background:#f6efeb !important; }.home-event-live-chip { color:#a5422e !important; border-color:#edc2b4 !important; background:#ffe4da !important; }.home-event-open { color:#b6533b !important; }
+.admin-deadline-editor { background:#fff5ee !important; border-color:#eadbd2 !important; }.admin-deadline-editor button { border-color:#d66e4f !important; color:#b6533b !important; }
+.MuiDialog-paper { background:#fffaf6 !important; color:#30212a !important; }
+/* Keep the handcrafted wooden trophy cabinet dark and theatrical as a deliberate feature. */
+@media(max-width:700px) { .nav { gap:2px; }.nav button { padding:8px 9px !important; font-size:11px !important; }.competition-summary-grid,.admin-stats { grid-template-columns:repeat(2,minmax(0,1fr)); }.category-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+
+/* OFF•PACE unified palette: deep charcoal + signature lime, with a clean light canvas. */
+:root {
+  color-scheme: light;
+  --pace-ink: #1B272B;
+  --pace-ink-2: #26363A;
+  --pace-lime: #B2D560;
+  --pace-lime-dark: #91B33E;
+  --pace-canvas: #F3F5EF;
+  --pace-paper: #FFFFFF;
+  --pace-line: #DDE4D8;
+  --pace-muted: #68766F;
+  --pace-soft: #EAF0DF;
+}
+html, body { background: var(--pace-canvas) !important; color: var(--pace-ink) !important; }
+body, .site { background: var(--pace-canvas) !important; color: var(--pace-ink) !important; }
+.appbar { background: var(--pace-ink) !important; color: #fff !important; border-bottom: 0 !important; box-shadow: 0 4px 18px rgba(27,39,43,.12); }
+.brand, .brand:hover { color: #fff !important; }
+.brand span { color: var(--pace-lime) !important; }
+.nav button { color: #C5D0C9 !important; border-radius: 9px; }
+.nav button.nav-active { color: var(--pace-lime) !important; background: rgba(178,213,96,.13) !important; }
+.header-action { color: var(--pace-lime) !important; border-color: rgba(178,213,96,.55) !important; }
+.nav-user { color: #E3E9E4 !important; }
+.nav-user .MuiAvatar-root { background: var(--pace-lime) !important; color: var(--pace-ink) !important; }
+.nav-user button { color: var(--pace-lime) !important; }
+
+.page-container { background: transparent !important; }
+.home-intro { border-bottom-color: var(--pace-line) !important; }
+.overline, .profile-section-heading .overline, .cabinet-heading .overline { color: #66862E !important; }
+.home-intro h1, .page-heading h1, .section-heading h2, .metric, .event-title-line h5,
+.profile-heading h1, .profile-section-heading h2, .cabinet-heading h2 { color: var(--pace-ink) !important; }
+.home-intro h1 span { color: #789C2F !important; }
+.intro-copy, .page-heading > p:last-child, .metric-label, .upcoming-count { color: var(--pace-muted) !important; }
+.intro-actions .MuiButton-contained, .auth-card .MuiButton-contained {
+  background: var(--pace-lime) !important; color: var(--pace-ink) !important;
+}
+.intro-actions .MuiButton-contained:hover, .auth-card .MuiButton-contained:hover {
+  background: #C1E477 !important; box-shadow: 0 7px 18px rgba(145,179,62,.22);
+}
+.intro-actions .MuiButton-text, .section-heading button, .overview-card button,
+.back-link { color: #5E7F25 !important; }
+
+.overview-card, .upcoming-row, .event-list-card, .athlete-table, .profile-card,
+.profile-section, .auth-card, .profile-about {
+  background: var(--pace-paper) !important; color: var(--pace-ink) !important;
+  border: 1px solid var(--pace-line) !important; box-shadow: 0 5px 18px rgba(27,39,43,.045);
+}
+.overview-card, .event-list-card, .profile-card, .profile-section, .auth-card { border-radius: 14px !important; }
+.overview-icon, .date-block, .event-date, .participation-symbol {
+  background: var(--pace-soft) !important; color: #567522 !important;
+}
+.metric { color: var(--pace-ink) !important; }
+.section-heading { border: 0; }
+.upcoming-row { border-radius: 12px !important; }
+.upcoming-row:hover, .event-list-card:hover { border-color: #B9D48A !important; box-shadow: 0 8px 24px rgba(27,39,43,.08); }
+.upcoming-info p:first-child, .athlete-name-cell b, .profile-section h6 { color: var(--pace-ink) !important; }
+.row-arrow { color: #78943F !important; }
+
+.filter-row .MuiOutlinedInput-root, .directory-tools .MuiOutlinedInput-root,
+.auth-card .MuiOutlinedInput-root, .MuiOutlinedInput-root {
+  background: #fff !important; color: var(--pace-ink) !important;
+}
+.MuiInputBase-input { color: var(--pace-ink) !important; }
+.MuiInputLabel-root { color: #66736D !important; }
+.MuiOutlinedInput-notchedOutline { border-color: #CAD5C6 !important; }
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline { border-color: #91B33E !important; }
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline { border-color: #789C2F !important; border-width: 2px; }
+.MuiMenu-paper, .MuiPopover-paper { background: #fff !important; color: var(--pace-ink) !important; }
+.MuiMenuItem-root { color: var(--pace-ink) !important; }
+.MuiMenuItem-root:hover { background: #F0F4E8 !important; }
+.MuiSvgIcon-root { flex-shrink: 0; }
+
+.status-open, .status-active { background: #E7F0D6 !important; color: #4E7020 !important; }
+.status-warn { background: #F5EEDC !important; color: #87621F !important; }
+.status-retired { background: #EDF0ED !important; color: #69736D !important; }
+.event-details, .team-cell, .athlete-name-cell small, .profile-heading p { color: var(--pace-muted) !important; }
+.event-details svg, .profile-events-title { color: #6E922E !important; }
+.directory-tools .MuiChip-root, .status-filters .MuiChip-root {
+  background: #fff !important; border: 1px solid var(--pace-line) !important; color: #627067 !important;
+}
+.directory-tools .filter-selected, .status-filters .filter-selected {
+  background: var(--pace-lime) !important; border-color: var(--pace-lime) !important; color: var(--pace-ink) !important;
+}
+.athlete-table { overflow: hidden; border-radius: 12px !important; }
+.athlete-table-head { background: #EAF0E3 !important; color: #59684D !important; }
+.athlete-row { border-top-color: #E6EBE2 !important; color: var(--pace-ink) !important; }
+.athlete-row:hover { background: #F7F9F3 !important; }
+.athlete-name-cell b { color: var(--pace-ink) !important; }
+.athlete-name-cell small { color: #718078 !important; }
+.tone-0 { background: #E7EFD8 !important; color: #4F6E25 !important; }
+.tone-1 { background: #E5ECE9 !important; color: #385B53 !important; }
+.tone-2 { background: #F1EBDD !important; color: #80622D !important; }
+.tone-3 { background: #E9EEDC !important; color: #617A36 !important; }
+.tone-4 { background: #E3ECEC !important; color: #41646A !important; }
+.profile-avatar { background: var(--pace-lime) !important; color: var(--pace-ink) !important; }
+.profile-facts { border-top-color: var(--pace-line) !important; }
+.profile-facts small { color: #77837C !important; }
+.profile-facts b { color: var(--pace-ink) !important; }
+.joined-event { border-bottom-color: var(--pace-line) !important; color: var(--pace-ink) !important; }
+.joined-event span:last-child { color: #64852D !important; }
+.footer { background: var(--pace-ink) !important; border-top: 0 !important; color: #B8C3BD !important; }
+.footer span:first-child { color: var(--pace-lime) !important; }
+.auth-card h1 { color: var(--pace-ink) !important; }
+.auth-card .form-label { color: #53645D !important; }
+.auth-foot { color: #718078 !important; }
+.auth-foot a { color: #63852B !important; }
+.auth-status-note { color: #89948D !important; }
+
+/* Profile surfaces use the same palette; the trophy cabinet remains a deliberate dark showcase. */
+.profile-hero { background: linear-gradient(112deg, #FFFFFF 0%, #F6F8F1 100%) !important; border: 1px solid var(--pace-line) !important; }
+.profile-hero .profile-avatar { box-shadow: 0 0 0 5px rgba(178,213,96,.22), 0 8px 22px rgba(27,39,43,.13) !important; }
+.profile-dot { color: #779A37 !important; }
+.profile-about { background: #fff !important; }
+.profile-about-top h6 { color: var(--pace-ink) !important; }
+.about-copy { color: #66736D !important; }
+.profile-section-heading h2, .cabinet-heading h2 { color: var(--pace-ink) !important; }
+.section-count, .cabinet-subtitle { color: #68766F !important; }
+.participation-item { background: #fff !important; border: 1px solid var(--pace-line) !important; }
+.participation-index { color: #8A9A78 !important; }
+.participation-copy b { color: var(--pace-ink) !important; }
+.participation-copy small { color: #748078 !important; }
+.participation-item .MuiChip-root { color: #4E7020 !important; background: #E7F0D6 !important; }
+.cabinet-total { border-left-color: #CBD6C2 !important; }
+.cabinet-total strong { color: #789C2F !important; }
+.cabinet-total span { color: #748078 !important; }
+
+/* Keep the wooden cabinet as a premium dark focal point, with lime only as a subtle brand cue. */
+.trophy-cabinet { border-color: rgba(178,213,96,.38) !important; }
+.trophy-cabinet__header { border-bottom-color: rgba(178,213,96,.22) !important; }
+.trophy-cabinet__eyebrow { color: var(--pace-lime) !important; }
+.trophy-cabinet__count b { color: var(--pace-lime) !important; text-shadow: none !important; }
+.trophy-cabinet__hint-dot { background: var(--pace-lime) !important; box-shadow: 0 0 7px rgba(178,213,96,.55) !important; }
+.cabinet-award:hover, .cabinet-award:focus-visible {
+  filter: drop-shadow(0 0 10px rgba(178,213,96,.28)) drop-shadow(0 8px 9px rgba(0,0,0,.55)) !important;
+}
+@media (max-width: 700px) {
+  .page-container { padding-top: 24px; }
+  .profile-hero { padding: 20px !important; }
+}
+
+/* EVENTS + PARTICIPATION: coordinated warm pastel sports palette */
+:root {
+  --event-peach: #F2C8B8;
+  --event-lavender: #DCC4E8;
+  --event-butter: #F2DC98;
+  --event-mint: #D7E8DC;
+  --event-ink: #251F2A;
+  --event-muted: #665D64;
+  --event-coral: #C9684D;
+}
+
+/* Events overview */
+.competition-summary-grid .MuiPaper-root {
+  border: 1px solid rgba(75, 52, 46, .06) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 22px rgba(55, 37, 32, .045) !important;
+}
+.competition-summary-grid .MuiPaper-root:nth-child(4n+1) { background: var(--event-peach) !important; }
+.competition-summary-grid .MuiPaper-root:nth-child(4n+2) { background: var(--event-lavender) !important; }
+.competition-summary-grid .MuiPaper-root:nth-child(4n+3) { background: var(--event-butter) !important; }
+.competition-summary-grid .MuiPaper-root:nth-child(4n) { background: var(--event-mint) !important; }
+.competition-summary-grid b { color: var(--event-ink) !important; }
+.competition-summary-grid span { color: var(--event-muted) !important; }
+
+.category-card {
+  color: var(--event-ink) !important;
+  border: 1px solid rgba(75, 52, 46, .055) !important;
+  border-radius: 15px !important;
+  box-shadow: 0 8px 22px rgba(55, 37, 32, .045) !important;
+  transition: transform .18s ease, box-shadow .18s ease !important;
+}
+.category-card:nth-child(4n+1) { background: linear-gradient(145deg, #F4D5C9, #EDC0B0) !important; }
+.category-card:nth-child(4n+2) { background: linear-gradient(145deg, #E8D8EF, #D3B7E2) !important; }
+.category-card:nth-child(4n+3) { background: linear-gradient(145deg, #F7E9B9, #F0D783) !important; }
+.category-card:nth-child(4n) { background: linear-gradient(145deg, #E1EEE4, #CDE2D4) !important; }
+.category-card h5, .category-card p, .category-bottom { color: var(--event-ink) !important; }
+.category-card p { opacity: .78; }
+.category-card:hover { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(55, 37, 32, .10) !important; }
+.category-icon { background: rgba(255,255,255,.58) !important; color: var(--event-ink) !important; }
+.category-top .MuiChip-root { background: rgba(255,255,255,.68) !important; color: #59464B !important; }
+.category-top .live-chip { background: #FFE1D5 !important; color: #A84D36 !important; }
+.category-bottom { border-top-color: rgba(53, 38, 43, .12) !important; }
+
+/* Events participated tab: same four-colour sequence as the event cards */
+.profile-tabs-shell {
+  background: #fff !important;
+  border: 1px solid #E9DDD6 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 5px 16px rgba(55, 37, 32, .035) !important;
+}
+.profile-tabs .MuiTab-root { color: #756A70 !important; }
+.profile-tabs .MuiTab-root.Mui-selected { color: var(--event-coral) !important; }
+.profile-tabs .MuiTabs-indicator { background: var(--event-coral) !important; }
+.profile-section-heading h2 { color: var(--event-ink) !important; }
+.profile-section-heading .overline { color: var(--event-coral) !important; }
+.section-count { color: var(--event-muted) !important; }
+.participation-item {
+  border: 1px solid rgba(75, 52, 46, .055) !important;
+  border-radius: 13px !important;
+  box-shadow: 0 5px 15px rgba(55, 37, 32, .035) !important;
+  transition: transform .16s ease, box-shadow .16s ease !important;
+}
+.participation-item:nth-child(4n+1) { background: #F4D5C9 !important; }
+.participation-item:nth-child(4n+2) { background: #E8D8EF !important; }
+.participation-item:nth-child(4n+3) { background: #F7E9B9 !important; }
+.participation-item:nth-child(4n) { background: #E1EEE4 !important; }
+.participation-item:hover { transform: translateY(-2px); box-shadow: 0 9px 20px rgba(55, 37, 32, .075) !important; }
+.participation-index { color: #6F5B5A !important; }
+.participation-symbol { background: rgba(255,255,255,.62) !important; color: #4C3E43 !important; }
+.participation-copy b { color: var(--event-ink) !important; }
+.participation-copy small { color: #6F6266 !important; }
+.participation-item .MuiChip-root { color: #725344 !important; background: rgba(255,255,255,.68) !important; }
+
+@media (max-width: 700px) {
+  .category-card { min-height: 190px; }
+  .participation-item { border-radius: 11px !important; }
+}

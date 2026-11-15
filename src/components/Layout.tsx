@@ -7,7 +7,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const location = useLocation(); const navigate = useNavigate(); const { currentUser, signOut } = useAppData();
   const links = !currentUser ? [] : currentUser.role === 'ADMIN' && currentUser.status === 'ACTIVE'
     ? [{ label: 'Home', to: '/' }, { label: 'Events', to: '/events' }, { label: 'Athletes', to: '/athletes' }]
-    : [{ label: 'Home', to: '/' }, { label: 'Athletes', to: '/athletes' }];
+    : [{ label: 'Home', to: '/' }, { label: 'Events', to: '/events' }, { label: 'Athletes', to: '/athletes' }];
   return <Box className="site">
     <AppBar position="static" elevation={0} className="appbar"><Container maxWidth="lg"><Toolbar disableGutters className="toolbar">
       <RouterLink to="/" className="brand">OFF<span>•</span>PACE</RouterLink>

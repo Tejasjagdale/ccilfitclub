@@ -71,6 +71,7 @@ export default function AthleteProfilePage() {
     </>}
 
     {profileTab === 'cabinet' && <>
+      <Box className="cabinet-heading tab-section-heading"><Box><Typography className="overline">BUILT ONE ACHIEVEMENT AT A TIME</Typography><Typography variant="h2">Trophy cabinet</Typography><Typography className="cabinet-subtitle">Every event leaves a mark. Every achievement earns its place.</Typography></Box><Box className="cabinet-total"><strong>{String(awards.length).padStart(2, '0')}</strong><span>AWARDS</span></Box></Box>
       <TrophyCabinet
         awards={awards}
         collectionName={`${person.firstName.toUpperCase()}’S COLLECTION`}

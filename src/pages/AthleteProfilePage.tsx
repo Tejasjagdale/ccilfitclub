@@ -6,7 +6,7 @@ import EmojiEventsRoundedIcon from '@mui/icons-material/EmojiEventsRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import Layout from '../components/Layout';
 import TrophyCabinet, { TrophyArtwork, type CabinetAward } from '../components/TrophyCabinet';
-import people from '../data/people.json';
+import { useAppData } from '../context/AppDataContext';
 
 type Award = CabinetAward;
 
@@ -32,10 +32,13 @@ const awardsByEmployee: Record<string, Award[]> = {
 
 export default function AthleteProfilePage() {
   const { employeeId } = useParams();
-  const person = people.find((item) => item.employeeId.toLowerCase() === (employeeId || '').toLowerCase());
+  const { users, registrations, competitions, categories } = useAppData();
+  const person = users.find((item) => item.employeeId.toLowerCase() === (employeeId || '').toLowerCase() && item.role === 'ATHLETE');
   const [selectedAward, setSelectedAward] = useState<Award | null>(null);
   const [profileTab, setProfileTab] = useState<'cabinet' | 'events'>('cabinet');
   const awards = useMemo(() => person ? (awardsByEmployee[person.employeeId] || []) : [], [person]);
+  const joinedEvents = person ? registrations.filter(r => r.userId === person.id && r.status === 'REGISTERED').map(r => competitions.find(c => c.id === r.competitionId)).filter((c): c is NonNullable<typeof c> => Boolean(c)) : [];
+  const eventNames = joinedEvents.map(c => `${categories.find(cat => cat.id === c.eventId)?.name ?? c.eventId} · ${c.name}`);
 
   if (!person) return <Layout><Box className="page-heading"><Typography variant="h1">Athlete not found</Typography><Button component={RouterLink} to="/athletes">Back to athletes</Button></Box></Layout>;
 
@@ -60,15 +63,14 @@ export default function AthleteProfilePage() {
     {profileTab === 'events' && <>
       <Box className="profile-section-heading tab-section-heading">
         <Box><Typography className="overline">SHOWING UP IS A WIN</Typography><Typography variant="h2">Events participated in</Typography></Box>
-        <span className="section-count">{person.eventsJoined.length} EVENTS</span>
+        <span className="section-count">{eventNames.length} EVENTS</span>
       </Box>
       <Box className="participation-list">
-        {person.eventsJoined.length ? person.eventsJoined.map((event, index) => <Paper className="participation-item" elevation={0} key={event}><span className="participation-index">{String(index + 1).padStart(2, '0')}</span><Box className="participation-symbol"><EventOutlinedIcon /></Box><Box className="participation-copy"><b>{event}</b><small>Official event participation</small></Box><Chip label="Participated" size="small" /></Paper>) : <Typography color="text.secondary">No events joined yet.</Typography>}
+        {eventNames.length ? eventNames.map((event, index) => <Paper className="participation-item" elevation={0} key={event}><span className="participation-index">{String(index + 1).padStart(2, '0')}</span><Box className="participation-symbol"><EventOutlinedIcon /></Box><Box className="participation-copy"><b>{event}</b><small>Official event participation</small></Box><Chip label="Participated" size="small" /></Paper>) : <Typography color="text.secondary">No events joined yet.</Typography>}
       </Box>
     </>}
 
     {profileTab === 'cabinet' && <>
-      <Box className="cabinet-heading tab-section-heading"><Box><Typography className="overline">BUILT ONE ACHIEVEMENT AT A TIME</Typography><Typography variant="h2">Trophy cabinet</Typography><Typography className="cabinet-subtitle">Every event leaves a mark. Every achievement earns its place.</Typography></Box><Box className="cabinet-total"><strong>{String(awards.length).padStart(2, '0')}</strong><span>AWARDS</span></Box></Box>
       <TrophyCabinet
         awards={awards}
         collectionName={`${person.firstName.toUpperCase()}’S COLLECTION`}

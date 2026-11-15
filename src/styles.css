@@ -224,3 +224,107 @@ body, .site { background: #141b1e !important; color: #e7eeeb !important; }
 @media(prefers-reduced-motion:reduce) {
   .award-trophy-artwork { animation:none; }
 }
+
+/* Competition management system */
+.nav-user { display:flex; align-items:center; gap:8px; color:#cbd8d2; font-size:12px; }
+.nav-user .MuiAvatar-root { width:28px; height:28px; font-size:11px; background:#405b50; }
+.nav-user button { color:#9fb5aa; font-size:11px; }
+.competition-summary-grid,.admin-stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:10px 0 26px; }
+.competition-summary-grid .MuiPaper-root,.admin-stats .MuiPaper-root { display:flex; flex-direction:column; gap:5px; padding:17px 19px; border:1px solid #304044; border-radius:10px; background:#1d282c; }
+.competition-summary-grid b,.admin-stats b { font-size:26px; color:#dce9e2; }
+.competition-summary-grid span,.admin-stats span { color:#91a49a; font-size:11px; }
+.category-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.category-card { display:flex; flex-direction:column; min-height:208px; padding:20px; border:1px solid #304044; border-radius:12px!important; background:linear-gradient(145deg,#202f32,#1b262a)!important; color:#e7eeeb!important; transition:transform .18s,border-color .18s,box-shadow .18s; }
+.category-card:hover { transform:translateY(-3px); border-color:#638b7d; box-shadow:0 12px 28px #0003; }
+.category-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:19px; }
+.category-icon { display:grid; place-items:center; width:43px; height:43px; border-radius:11px; background:#2c403c; color:#c5d8a4; font-size:24px; }
+.category-card h5 { color:#e7eeeb; font-size:19px; font-weight:700; }
+.category-card p { color:#9eafa7; font-size:12px; line-height:1.55; margin-top:7px; }
+.category-bottom { display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:18px; color:#8da99c; font-size:9px; letter-spacing:.12em; font-weight:800; }
+.category-bottom svg { font-size:17px; }
+.quiet-chip { background:#2a3739!important; color:#b4c3bc!important; font-size:9px!important; letter-spacing:.04em; }
+.live-chip { background:#4a3828!important; color:#f1c58b!important; font-size:9px!important; font-weight:800!important; }
+.complete-chip { background:#294137!important; color:#a9d2b8!important; font-size:9px!important; }
+.event-detail-hero { display:flex; align-items:center; gap:18px; padding:25px; border:1px solid #304044; border-radius:13px; background:linear-gradient(115deg,#20302f,#1b282c); }
+.event-detail-hero .category-icon { width:62px; height:62px; font-size:32px; }
+.event-detail-hero h1 { margin:3px 0!important; color:#edf3ef; font-size:35px!important; }
+.event-history-controls { display:flex; align-items:end; justify-content:space-between; gap:15px; margin:37px 0 15px; }
+.event-history-controls h2 { margin-top:5px; color:#e7eeeb; font-size:23px; }
+.event-history-controls .MuiOutlinedInput-root { min-width:135px; background:#202d31; color:#e7eeeb; }
+.competition-pills { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:14px; }
+.competition-pills button { border:1px solid #34464a; color:#aebdb6; font-size:10px; text-transform:none; }
+.competition-pills button.pill-active { border-color:#789f91; color:#d1e2d8; background:#2a3c39; }
+.competition-detail-card,.results-panel,.records-panel,.admin-form-card { padding:22px; border:1px solid #304044; border-radius:12px!important; background:#1d282c!important; color:#e7eeeb!important; }
+.competition-detail-title,.panel-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+.competition-detail-title h4 { color:#e7eeeb; font-size:21px; font-weight:700; margin-top:4px; }
+.competition-detail-card > p { color:#9eafa7; }
+.competition-meta { display:flex; flex-wrap:wrap; gap:19px; margin-top:18px; color:#91a49a; font-size:11px; }
+.registration-banner { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:19px; padding:14px 16px; border:1px solid #3e5d50; border-radius:9px; background:#233630; }
+.registration-banner > div { display:flex; flex-direction:column; gap:3px; }.registration-banner b { color:#d4e5da; font-size:12px; }.registration-banner span { color:#9eb5a8; font-size:10px; }
+.registration-banner .MuiButton-contained,.form-actions .MuiButton-contained { background:#789f91; color:#14201f; font-weight:700; }
+.results-record-grid { display:grid; grid-template-columns:1.15fr .85fr; gap:14px; margin-top:15px; align-items:start; }
+.panel-heading h5 { color:#e7eeeb; font-size:17px; font-weight:700; margin-top:4px; }.panel-heading > svg { color:#c3aa73; font-size:25px; }
+.standings-head,.standing-row { display:grid; grid-template-columns:58px minmax(130px,1fr) 115px 95px; align-items:center; gap:12px; }
+.standings-head { padding:12px 10px; color:#7f948a; font-size:9px; letter-spacing:.1em; border-bottom:1px solid #344448; }
+.standing-row { padding:13px 10px; border-bottom:1px solid #2b393d; color:#dce7e1; font-size:12px; }
+.standing-row > div { display:flex; flex-direction:column; gap:4px; }.standing-row small { color:#8fa199; font-size:10px; }.standing-row > strong { color:#c8d8b6; font-size:12px; }.standing-row > span { color:#93a49c; font-size:10px; }
+.rank { display:grid; place-items:center; width:31px; height:31px; border-radius:8px; background:#2b393b; color:#b9c8c0; }.rank-1 { background:#5b4b2c; color:#f1d38d; }.rank-2 { background:#3c464a; color:#d7e0e0; }.rank-3 { background:#4b392f; color:#d5a985; }
+.record-item { display:grid; grid-template-columns:36px 1fr auto; align-items:center; gap:10px; padding:14px 0; border-bottom:1px solid #2b393d; }.record-medal { display:grid; place-items:center; width:34px; height:34px; background:#3b3428; color:#d9bd7f; border-radius:50%; }.record-item > div { display:flex; flex-direction:column; gap:5px; }.record-item b { color:#dce7e1; font-size:12px; }.record-item small { color:#8fa199; font-size:10px; }.record-item p { margin:0; color:#879a91; font-size:10px; line-height:1.5; }.record-item > strong { color:#d5c18f; font-size:13px; }.record-type-chip { width:max-content; height:18px!important; background:#34392f!important; color:#c6d0a2!important; font-size:8px!important; }
+.empty-results { display:flex; flex-direction:column; align-items:center; gap:8px; padding:42px 15px; border:1px dashed #405256; border-radius:10px; color:#cbd9d1; background:#1b262a; text-align:center; }.empty-results > span { font-size:30px; color:#8fa99b; }.empty-results small { color:#8fa199; font-size:11px; }
+.admin-page-heading { padding-bottom:16px; }.admin-section { margin-top:36px; }.admin-section-title { display:flex; justify-content:space-between; align-items:end; margin-bottom:14px; }.admin-section-title h2 { margin-top:5px; color:#e7eeeb; font-size:23px; }
+.admin-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; }.admin-form-grid .MuiOutlinedInput-root { background:#202d31; color:#e7eeeb; font-size:12px; }.admin-form-grid .MuiInputLabel-root { color:#a1b0aa; }.admin-form-grid .MuiOutlinedInput-notchedOutline { border-color:#405156; }.admin-form-grid .MuiFormControl-root { min-width:0; }.span-two { grid-column:1/-1; }
+.form-actions { display:flex; align-items:center; gap:13px; flex-wrap:wrap; }.form-actions p { color:#8fa199; font-size:10px; }.form-actions .MuiButton-root { font-size:11px; }
+.admin-control-top { display:flex; align-items:center; gap:12px; }.admin-control-top .MuiFormControl-root { flex:1; }.admin-control-top .MuiOutlinedInput-root { background:#202d31; color:#e7eeeb; font-size:12px; }
+.competition-admin-meta { display:flex; flex-wrap:wrap; gap:16px; margin:15px 0; color:#8fa199; font-size:10px; }.status-actions { display:flex; flex-wrap:wrap; gap:7px; }.status-actions .MuiButton-root { min-width:0; padding:6px 10px; border-color:#405156; color:#b6c5bd; font-size:9px; }.status-actions .MuiButton-contained { background:#789f91; color:#14201f; }
+.admin-help { display:block; margin-top:12px!important; color:#82968c; font-size:10px!important; }.admin-subsection-title { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin:25px 0 13px; padding-top:18px; border-top:1px solid #344448; }.admin-subsection-title h5 { color:#dce7e1; font-size:16px; font-weight:700; }.admin-subsection-title p { color:#84988f; font-size:10px; }
+.score-form { margin-bottom:14px; }.admin-result-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }.admin-result-list > div { display:flex; flex-direction:column; gap:4px; padding:10px; background:#202d31; border-radius:7px; }.admin-result-list b { color:#dce7e1; font-size:11px; }.admin-result-list span { color:#8fa199; font-size:10px; }
+.admin-user-list { margin-top:20px; border-top:1px solid #344448; }.admin-user-list > div { display:grid; grid-template-columns:1fr auto auto; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid #2b393d; }.admin-user-list > div > span { display:flex; flex-direction:column; gap:4px; }.admin-user-list b { color:#dce7e1; font-size:11px; }.admin-user-list small { color:#8fa199; font-size:10px; }
+.demo-login-note { display:flex; flex-direction:column; gap:5px; margin-top:18px; padding:13px; border:1px solid #344b43; border-radius:8px; background:#202f2b; }.demo-login-note b { color:#c8ddce; font-size:11px; }.demo-login-note span { color:#b6c8bd; font-size:11px; }.demo-login-note small { color:#82988d; font-size:9px; line-height:1.5; }
+.admin-shortcut { display:flex; align-items:center; justify-content:space-between; gap:15px; margin-top:24px; padding:22px; border:1px solid #415b50; border-radius:11px!important; background:linear-gradient(110deg,#20332e,#1c292c)!important; }.admin-shortcut h5 { color:#e1ebe5; font-size:17px; margin:4px 0; }.admin-shortcut p { color:#95a99f; font-size:11px; }.admin-shortcut button { background:#789f91; color:#14201f; font-size:11px; }
+@media(max-width:800px) { .category-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }.results-record-grid { grid-template-columns:1fr; }.competition-summary-grid,.admin-stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:600px) { .category-grid { grid-template-columns:1fr; }.event-detail-hero { align-items:flex-start; flex-wrap:wrap; padding:18px; }.event-detail-hero h1 { font-size:28px!important; }.event-history-controls { align-items:flex-start; flex-direction:column; }.registration-banner,.admin-shortcut { align-items:flex-start; flex-direction:column; }.admin-form-grid { grid-template-columns:1fr; }.span-two { grid-column:auto; }.admin-subsection-title { align-items:flex-start; flex-direction:column; }.admin-result-list { grid-template-columns:1fr; }.standings-head,.standing-row { grid-template-columns:37px minmax(90px,1fr) 85px; }.standings-head span:last-child,.standing-row > span { display:none; }.record-item { grid-template-columns:32px 1fr; }.record-item > strong { grid-column:2; }.admin-user-list > div { grid-template-columns:1fr auto; }.admin-user-list > div .MuiChip-root:last-child { grid-column:2; } .nav-user span { display:none; } }
+
+
+/* Home: intentionally minimal two-tab event board */
+.home-events-page { max-width: 980px; margin: 42px auto 72px; }
+.home-events-heading { margin: 0 0 22px; }
+.home-events-heading h1 { color: #e7eeeb; font-size: clamp(30px,4vw,38px); font-weight: 750; letter-spacing: -.04em; }
+.home-events-heading p { margin-top: 7px; color: #9eaea7; font-size: 13px; }
+.home-events-panel { overflow: hidden; border: 1px solid #304044; border-radius: 13px !important; background: #1a2528 !important; }
+.home-events-tabs { min-height: 54px; padding: 0 18px; border-bottom: 1px solid #304044; }
+.home-events-tabs .MuiTab-root { min-height: 54px; color: #8fa29a; text-transform: none; font-size: 13px; font-weight: 650; }
+.home-events-tabs .Mui-selected { color: #c6d9cf !important; }
+.home-events-tabs .MuiTabs-indicator { height: 2px; background: #91b6a4; }
+.home-events-list { padding: 8px 18px; }
+.home-event-row { display: flex; align-items: center; gap: 16px; padding: 15px 4px; border-bottom: 1px solid #2b393d; border-radius: 0 !important; background: transparent !important; }
+.home-event-row:last-child { border-bottom: 0; }
+.home-event-date { display: flex; flex: 0 0 48px; flex-direction: column; align-items: center; justify-content: center; min-height: 48px; border: 1px solid #3b5148; border-radius: 8px; background: #202f2b; }
+.home-event-date strong { color: #d6e5dc; font-size: 19px; line-height: 1.1; }
+.home-event-date span { margin-top: 3px; color: #91a69a; font-size: 10px; text-transform: uppercase; }
+.home-event-copy { flex: 1; min-width: 0; }
+.home-event-name { color: #e2ebe6; font-size: 14px; font-weight: 700 !important; }
+.home-event-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 5px !important; color: #91a39b; font-size: 11px !important; }
+.home-event-status-chip { color: #b8c9c0 !important; border: 1px solid #3b4c47; background: #25322f !important; font-size: 10px !important; }
+.home-event-live-chip { color: #f0c4b8 !important; border: 1px solid #754c43; background: #422d29 !important; font-size: 10px !important; }
+.home-event-open { flex: 0 0 auto; color: #b9d0c4 !important; font-size: 11px !important; text-transform: none !important; }
+.home-events-empty { display: flex; min-height: 190px; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; }
+.home-events-empty > svg { color: #6f8b7e; font-size: 26px; margin-bottom: 4px; }
+.home-events-empty p:first-of-type { color: #d5e0da; }
+.home-events-empty p:last-of-type { color: #8fa199; }
+@media(max-width:600px) {
+  .home-events-page { margin: 24px auto 48px; }
+  .home-events-heading { margin-bottom: 16px; }
+  .home-events-list { padding: 4px 12px; }
+  .home-event-row { gap: 10px; padding: 13px 0; flex-wrap: wrap; }
+  .home-event-date { flex-basis: 42px; min-height: 44px; }
+  .home-event-copy { flex-basis: calc(100% - 60px); }
+  .home-event-row .MuiChip-root { margin-left: 52px; }
+  .home-event-open { margin-left: auto !important; }
+  .home-event-meta { font-size: 10px !important; }
+}
+
+
+/* Admin competition lifecycle controls */
+.admin-deadline-editor { display:flex; align-items:center; gap:10px; margin:14px 0 8px; padding:13px; border:1px solid #344448; border-radius:9px; background:#192427; }
+.admin-deadline-editor button { border-color:#6c9483; color:#b9d0c4; white-space:nowrap; }
+@media(max-width:600px) { .admin-deadline-editor { align-items:stretch; flex-direction:column; } }

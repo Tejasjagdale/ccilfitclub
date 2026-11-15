@@ -12,7 +12,6 @@ export type CabinetAward = {
   finish?: string;
 };
 
-export type CabinetStyle = 'wooden' | 'glass-wood' | 'tech-slider' | 'museum' | 'performance';
 
 type TrophyCabinetProps = {
   awards: CabinetAward[];
@@ -29,58 +28,13 @@ const BAY_ROWS = [
 const BAY_COLUMNS = [260, 600, 940] as const;
 const MAX_AWARDS = BAY_ROWS.length * BAY_COLUMNS.length;
 
-const CABINET_STYLES: { id: CabinetStyle; name: string; caption: string }[] = [
-  { id: 'wooden', name: 'Wooden classic', caption: 'The original carved mahogany cabinet' },
-  { id: 'glass-wood', name: 'Glass + wood', caption: 'Warm oak frame with hinged glass doors' },
-  { id: 'tech-slider', name: 'High-tech slider', caption: 'Motorised glass doors with illuminated tracks' },
-  { id: 'museum', name: 'Museum antique', caption: 'Dark lacquer, burgundy velvet and antique brass' },
-  { id: 'performance', name: 'Performance lab', caption: 'Graphite metal, midnight blue and precision lighting' },
-];
-
-const CABINET_PALETTES: Record<CabinetStyle, {
-  wood: string[]; front: string[]; edge: string[]; velvet: string[]; shelf: string[];
-  case: string; caseStroke: string; inner: string; trim: string; spot: string; line: string; lineDark: string;
-}> = {
-  wooden: {
-    wood: ['#b17a4c', '#6c3e28', '#98603a', '#4c2b1e', '#a16b43'],
-    front: ['#b67d50', '#875333', '#5b3424', '#321d17'],
-    edge: ['#2f1b15', '#a26c42', '#d09a61', '#70432b', '#261611'],
-    velvet: ['#263b4b', '#172b3a', '#0c1822'],
-    shelf: ['#d19a61', '#9b623d', '#71432d', '#3b241c', '#241713'],
-    case: '#241712', caseStroke: '#140d0a', inner: '#130e0e', trim: '#c08a55', spot: '#e7c98e', line: '#f2d89b', lineDark: '#97703f',
-  },
-  'glass-wood': {
-    wood: ['#c08a58', '#805033', '#a16c43', '#65402c', '#b17a4c'],
-    front: ['#c08c5c', '#98613b', '#69432d', '#39241a'],
-    edge: ['#3a2419', '#a06a40', '#d7aa70', '#815333', '#2c1b14'],
-    velvet: ['#314757', '#203444', '#10202b'],
-    shelf: ['#d8ab76', '#a9764d', '#714b34', '#40291f', '#251813'],
-    case: '#2a1b14', caseStroke: '#170f0b', inner: '#17242c', trim: '#d2a36d', spot: '#c8dce3', line: '#f1d8a3', lineDark: '#9a7446',
-  },
-  'tech-slider': {
-    wood: ['#687b87', '#354754', '#526570', '#202e38', '#718792'],
-    front: ['#80939b', '#4c606b', '#293a45', '#17232d'],
-    edge: ['#101820', '#526875', '#95aab2', '#3b505c', '#0b1118'],
-    velvet: ['#1a3444', '#102632', '#081820'],
-    shelf: ['#8da5ad', '#526d7b', '#2b4653', '#172b36', '#0b1820'],
-    case: '#101a22', caseStroke: '#080e13', inner: '#09151d', trim: '#638794', spot: '#5fc4d5', line: '#83e4e9', lineDark: '#397987',
-  },
-  museum: {
-    wood: ['#75523f', '#39251f', '#63402f', '#25171a', '#875d43'],
-    front: ['#8a5e40', '#56362a', '#33201d', '#1b1216'],
-    edge: ['#160f12', '#6f4732', '#b18a5e', '#513326', '#100b0e'],
-    velvet: ['#482936', '#301c2a', '#170f1a'],
-    shelf: ['#b58b5c', '#805638', '#553523', '#2f1d1a', '#180f11'],
-    case: '#1c1213', caseStroke: '#0b080a', inner: '#160e14', trim: '#b58b5c', spot: '#bd9562', line: '#e6c48a', lineDark: '#76512e',
-  },
-  performance: {
-    wood: ['#62727b', '#35434b', '#4b5e68', '#202b33', '#74858b'],
-    front: ['#89999e', '#53636a', '#2c3a42', '#151f26'],
-    edge: ['#0c141b', '#526b75', '#8da7aa', '#344d59', '#080e13'],
-    velvet: ['#142d3a', '#0b202b', '#07141d'],
-    shelf: ['#76929b', '#47616b', '#243d49', '#132a35', '#08151d'],
-    case: '#111b22', caseStroke: '#070d12', inner: '#0a1820', trim: '#6f9da0', spot: '#58b8b2', line: '#91d8c7', lineDark: '#3c7b79',
-  },
+const WOODEN_PALETTE = {
+  wood: ['#b17a4c', '#6c3e28', '#98603a', '#4c2b1e', '#a16b43'],
+  front: ['#b67d50', '#875333', '#5b3424', '#321d17'],
+  edge: ['#2f1b15', '#a26c42', '#d09a61', '#70432b', '#261611'],
+  velvet: ['#263b4b', '#172b3a', '#0c1822'],
+  shelf: ['#d19a61', '#9b623d', '#71432d', '#3b241c', '#241713'],
+  case: '#241712', caseStroke: '#140d0a', inner: '#130e0e', trim: '#c08a55', spot: '#e7c98e', line: '#f2d89b', lineDark: '#97703f',
 };
 
 function TrophyArt({ type, prefix = '', standalone = false }: { type: CabinetAward['type']; prefix?: string; standalone?: boolean }) {
@@ -175,9 +129,7 @@ export default function TrophyCabinet({ awards, collectionName, selectedAwardId,
   const [launchingAwardId, setLaunchingAwardId] = useState<string | null>(null);
   const launchTimer = useRef<number | null>(null);
   const visibleAwards = awards.slice(0, MAX_AWARDS);
-  const [cabinetStyle, setCabinetStyle] = useState<CabinetStyle>('wooden');
-  const [techDoorsOpen, setTechDoorsOpen] = useState(true);
-  const palette = CABINET_PALETTES[cabinetStyle];
+  const palette = WOODEN_PALETTE;
 
   useEffect(() => () => {
     if (launchTimer.current !== null) window.clearTimeout(launchTimer.current);
@@ -194,7 +146,7 @@ export default function TrophyCabinet({ awards, collectionName, selectedAwardId,
   };
 
   return (
-    <section className={`trophy-cabinet trophy-cabinet--${cabinetStyle}`} aria-label="Athlete trophy cabinet">
+    <section className="trophy-cabinet trophy-cabinet--wooden" aria-label="Athlete trophy cabinet">
       <header className="trophy-cabinet__header">
         <div>
           <span className="trophy-cabinet__eyebrow">THE HALL OF ACHIEVEMENT</span>
@@ -204,28 +156,10 @@ export default function TrophyCabinet({ awards, collectionName, selectedAwardId,
         <div className="trophy-cabinet__count"><b>{String(awards.length).padStart(2, '0')}</b><span>AWARDS</span></div>
       </header>
 
-      <nav className="cabinet-style-picker" aria-label="Choose trophy cabinet style">
-        <div className="cabinet-style-picker__label">CHOOSE YOUR DISPLAY</div>
-        <div className="cabinet-style-picker__options">
-          {CABINET_STYLES.map((style) => <button
-            className={`cabinet-style-option ${cabinetStyle === style.id ? 'is-active' : ''}`}
-            type="button"
-            key={style.id}
-            aria-pressed={cabinetStyle === style.id}
-            onClick={() => { setCabinetStyle(style.id); if (style.id === 'tech-slider') setTechDoorsOpen(true); }}
-          >
-            <span className={`cabinet-style-option__swatch cabinet-style-option__swatch--${style.id}`} aria-hidden="true" />
-            <span className="cabinet-style-option__copy"><b>{style.name}</b><small>{style.caption}</small></span>
-            {cabinetStyle === style.id && <span className="cabinet-style-option__check" aria-hidden="true">✓</span>}
-          </button>)}
-        </div>
-        {cabinetStyle === 'tech-slider' && <button className="cabinet-door-toggle" type="button" onClick={() => setTechDoorsOpen((open) => !open)} aria-pressed={techDoorsOpen}>
-          <span className={`cabinet-door-toggle__light ${techDoorsOpen ? 'is-on' : ''}`} />{techDoorsOpen ? 'SLIDING DOORS OPEN' : 'SLIDING DOORS CLOSED'} <b>{techDoorsOpen ? 'CLOSE DOORS' : 'OPEN DISPLAY'}</b>
-        </button>}
-      </nav>
+
 
       <div className="trophy-cabinet__stage">
-        <svg className="trophy-cabinet__artboard" viewBox="0 0 1200 780" role="group" aria-label={`${CABINET_STYLES.find((style) => style.id === cabinetStyle)?.name} trophy cabinet with nine display compartments`}>
+        <svg className="trophy-cabinet__artboard" viewBox="0 0 1200 780" role="group" aria-label={`Wooden trophy cabinet with nine display compartments`}>
           <defs>
             <linearGradient id="wood" x1="0" y1="0" x2="1" y2="1">
               {palette.wood.map((color, index) => <stop key={index} offset={['0', '.2', '.47', '.72', '1'][index]} stopColor={color} />)}
@@ -253,8 +187,8 @@ export default function TrophyCabinet({ awards, collectionName, selectedAwardId,
             </linearGradient>
             <linearGradient id="goldInner" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff1c0" /><stop offset=".5" stopColor="#d5a34c" /><stop offset="1" stopColor="#8c5a23" /></linearGradient>
             <linearGradient id="silverGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#fff8de" /><stop offset=".3" stopColor="#c8c6b8" /><stop offset=".65" stopColor="#7d8586" /><stop offset="1" stopColor="#e7d4a3" /></linearGradient>
-            <linearGradient id="woodGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={cabinetStyle === 'tech-slider' || cabinetStyle === 'performance' ? '#789ba1' : '#d4a66a'} /><stop offset=".45" stopColor={cabinetStyle === 'tech-slider' || cabinetStyle === 'performance' ? '#3d5965' : '#80502c'} /><stop offset="1" stopColor={cabinetStyle === 'tech-slider' || cabinetStyle === 'performance' ? '#142733' : '#43271b'} /></linearGradient>
-            <radialGradient id="spot"><stop offset="0" stopColor={palette.spot} stopOpacity={cabinetStyle === 'tech-slider' ? '.18' : '.22'} /><stop offset=".5" stopColor={palette.spot} stopOpacity=".08" /><stop offset="1" stopColor={palette.spot} stopOpacity="0" /></radialGradient>
+            <linearGradient id="woodGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#d4a66a" /><stop offset=".45" stopColor="#80502c" /><stop offset="1" stopColor="#43271b" /></linearGradient>
+            <radialGradient id="spot"><stop offset="0" stopColor={palette.spot} stopOpacity={'.22'} /><stop offset=".5" stopColor={palette.spot} stopOpacity=".08" /><stop offset="1" stopColor={palette.spot} stopOpacity="0" /></radialGradient>
             <linearGradient id="goldLine" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor={palette.line} /><stop offset="1" stopColor={palette.lineDark} /></linearGradient>
             <pattern id="grain" width="180" height="90" patternUnits="userSpaceOnUse">
               <path d="M0 12 C48 5 88 19 180 8 M0 34 C55 27 105 42 180 30 M0 62 C48 54 112 72 180 57 M0 81 C58 76 118 87 180 76" fill="none" stroke="#e2b27d" strokeOpacity=".12" strokeWidth="2" />
@@ -340,53 +274,6 @@ export default function TrophyCabinet({ awards, collectionName, selectedAwardId,
             <rect x="48" y="708" width="1104" height="14" fill="#241611" />
             <rect x="40" y="719" width="1120" height="13" fill="url(#woodEdge)" stroke="#160d0a" strokeWidth="2" />
           </g>
-
-          {/* Glass gallery: two hinged, lightly tinted panes with brass handles. */}
-          {cabinetStyle === 'glass-wood' && <g className="cabinet-glass-overlay" pointerEvents="none">
-            <rect x="104" y="99" width="496" height="468" rx="3" fill="url(#glassSheen)" stroke="#b5cbd0" strokeOpacity=".48" strokeWidth="3" />
-            <rect x="600" y="99" width="496" height="468" rx="3" fill="url(#glassSheen)" stroke="#b5cbd0" strokeOpacity=".48" strokeWidth="3" />
-            <path d="M114 108 L114 557 M590 108 L590 557 M610 108 L610 557 M1086 108 L1086 557" stroke="#d9edf0" strokeOpacity=".2" strokeWidth="2" />
-            <path d="M126 115 L270 115 L176 556 L126 556Z M640 108 L760 108 L664 556 L612 556Z" fill="#dff5f8" opacity=".035" />
-            <rect x="578" y="285" width="7" height="72" rx="3" fill="url(#gold)" stroke="#60401e" strokeWidth="1.5" />
-            <rect x="615" y="285" width="7" height="72" rx="3" fill="url(#gold)" stroke="#60401e" strokeWidth="1.5" />
-            {[145, 545, 655, 1055].map((x) => [122, 543].map((y) => <circle key={`hinge-${x}-${y}`} cx={x} cy={y} r="5" fill="#9b7849" stroke="#e3c58f" strokeWidth="1" />))}
-            <rect x="108" y="103" width="984" height="460" fill="none" stroke="#e8f4f6" strokeOpacity=".1" strokeWidth="1" />
-          </g>}
-
-          {/* High-tech motorised sliders. In the open state, the panels retract into the side channels. */}
-          {cabinetStyle === 'tech-slider' && <g className={`cabinet-tech-doors ${techDoorsOpen ? 'is-open' : 'is-closed'}`} pointerEvents="none">
-            <path d="M105 94 H1095 M105 570 H1095" stroke="#6ed5de" strokeOpacity=".6" strokeWidth="3" />
-            <path d="M110 96 H1090 M110 568 H1090" stroke="#a1f0ed" strokeOpacity=".22" strokeWidth="1" />
-            <g className="cabinet-tech-door cabinet-tech-door--left">
-              <rect x="105" y="101" width="494" height="461" fill="url(#techGlass)" stroke="#6fc3cf" strokeOpacity=".72" strokeWidth="3" />
-              <path d="M126 120 L126 540 M572 120 L572 540" stroke="#9ce6e7" strokeOpacity=".34" strokeWidth="2" />
-              <path d="M143 115 L260 115 L155 550 L128 550Z" fill="#c1fbf9" opacity=".06" />
-              <rect x="570" y="288" width="8" height="68" rx="4" fill="#8adbe0" />
-              <text x="138" y="139" className="cabinet-tech-label">DISPLAY 01</text>
-            </g>
-            <g className="cabinet-tech-door cabinet-tech-door--right">
-              <rect x="601" y="101" width="494" height="461" fill="url(#techGlass)" stroke="#6fc3cf" strokeOpacity=".72" strokeWidth="3" />
-              <path d="M628 120 L628 540 M1074 120 L1074 540" stroke="#9ce6e7" strokeOpacity=".34" strokeWidth="2" />
-              <path d="M646 115 L763 115 L658 550 L631 550Z" fill="#c1fbf9" opacity=".06" />
-              <rect x="622" y="288" width="8" height="68" rx="4" fill="#8adbe0" />
-              <text x="1044" y="139" textAnchor="end" className="cabinet-tech-label">DISPLAY 02</text>
-            </g>
-            <rect x="92" y="83" width="1016" height="9" rx="4" fill="#182a34" stroke="#497a86" strokeWidth="1" />
-            <rect x="92" y="576" width="1016" height="9" rx="4" fill="#182a34" stroke="#497a86" strokeWidth="1" />
-          </g>}
-
-          {/* Museum and performance styles get their own signature trim without changing the award artwork. */}
-          {cabinetStyle === 'museum' && <g className="cabinet-museum-ornament" pointerEvents="none">
-            <path d="M67 70 Q600 4 1133 70 M67 588 Q600 635 1133 588" fill="none" stroke="#d1ab70" strokeOpacity=".5" strokeWidth="2" />
-            <path d="M78 78 Q600 20 1122 78 M78 581 Q600 625 1122 581" fill="none" stroke="#e7c88e" strokeOpacity=".18" strokeWidth="1" />
-            <circle cx="600" cy="62" r="5" fill="#d0aa70" /><circle cx="600" cy="590" r="5" fill="#d0aa70" />
-          </g>}
-          {cabinetStyle === 'performance' && <g className="cabinet-performance-lines" pointerEvents="none">
-            <path d="M70 95 H1128 M70 574 H1128" stroke="#67c9bd" strokeOpacity=".72" strokeWidth="2" />
-            <path d="M75 98 H180 M1020 98 H1125 M75 571 H180 M1020 571 H1125" stroke="#bcf0dc" strokeOpacity=".45" strokeWidth="3" />
-            {[0, 1, 2].map((i) => <g key={`perf-light-${i}`}><rect x={160 + i * 440} y="91" width="84" height="4" rx="2" fill="#77d1c6" opacity=".74" /><rect x={160 + i * 440} y="571" width="84" height="4" rx="2" fill="#77d1c6" opacity=".5" /></g>)}
-            <text x="600" y="590" textAnchor="middle" className="cabinet-performance-label">PERFORMANCE ARCHIVE · TRAIN HARD / EARNED FOREVER</text>
-          </g>}
 
           {/* Fixed event awards sit above the same small display plinth in each bay. */}
           {BAY_ROWS.map((row, rowIndex) => BAY_COLUMNS.map((centerX, colIndex) => {

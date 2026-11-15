@@ -3,9 +3,11 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Avatar, Box, Chip, Paper, TextField, Typography } from '@mui/material';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import Layout from '../components/Layout';
-import people from '../data/people.json';
+import { useAppData } from '../context/AppDataContext';
 
 export default function AthletesPage() {
+  const { users } = useAppData();
+  const people = users.filter((person) => person.role === 'ATHLETE');
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('ALL');
   const filtered = useMemo(() => people.filter((person) =>

@@ -1,42 +1,22 @@
-import { useMemo, useState } from 'react';
-import { Box, Chip, MenuItem, Paper, TextField, Typography } from '@mui/material';
-import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
-import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined';
-import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
+import { Link as RouterLink } from 'react-router-dom';
+import { Box, Chip, Paper, Typography } from '@mui/material';
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import Layout from '../components/Layout';
-import events from '../data/events.json';
+import { useAppData } from '../context/AppDataContext';
 
 export default function EventsPage() {
-  const [category, setCategory] = useState('All');
-  const filtered = useMemo(() => events.filter((event) => category === 'All' || event.category === category), [category]);
-  return (
-    <Layout>
-      <Box className="page-heading">
-        <Typography className="overline">THE CALENDAR</Typography>
-        <Typography variant="h1">Events</Typography>
-        <Typography color="text.secondary">See what's coming up and find something to take part in.</Typography>
-      </Box>
-      <Box className="filter-row">
-        <TextField select size="small" label="Category" value={category} onChange={(e) => setCategory(e.target.value)} sx={{ width: 190 }}>
-          {['All','Fitness','Strategy','Outdoor'].map((item) => <MenuItem key={item} value={item}>{item}</MenuItem>)}
-        </TextField>
-        <Typography color="text.secondary" fontSize={13}>{filtered.length} events</Typography>
-      </Box>
-      <Box className="event-list">
-        {filtered.map((event) => <Paper className="event-list-card" elevation={0} key={event.id}>
-          <Box className="event-date"><b>{event.day}</b><span>{event.month}</span><small>2026</small></Box>
-          <Box className="event-main">
-            <Box className="event-title-line"><Typography variant="h5">{event.title}</Typography><Chip label={event.status} size="small" className={event.status === 'Almost full' ? 'status-warn' : 'status-open'} /></Box>
-            <Typography color="text.secondary" fontSize={13} sx={{ mt: .7 }}>{event.description}</Typography>
-            <Box className="event-details">
-              <span><ScheduleOutlinedIcon />{event.date} · {event.time}</span>
-              <span><PlaceOutlinedIcon />{event.venue}</span>
-              <span><GroupsOutlinedIcon />{event.participants}/{event.capacity} registered</span>
-            </Box>
-          </Box>
-        </Paper>)}
-        {filtered.length === 0 && <Typography color="text.secondary">No events in this category yet.</Typography>}
-      </Box>
-    </Layout>
-  );
+  const { categories, competitions, registrations, results } = useAppData();
+  return <Layout>
+    <Box className="page-heading"><Typography className="overline">THE SPORTS CALENDAR</Typography><Typography variant="h1">Events</Typography><Typography color="text.secondary">Six fixed disciplines. New competitions every quarter. One place for every result and record.</Typography></Box>
+    <Box className="competition-summary-grid"><Paper elevation={0}><b>{competitions.length}</b><span>Competitions created</span></Paper><Paper elevation={0}><b>{competitions.filter(c => c.status === 'LIVE').length}</b><span>Live right now</span></Paper><Paper elevation={0}><b>{registrations.filter(r => r.status === 'REGISTERED').length}</b><span>Registrations</span></Paper><Paper elevation={0}><b>{results.length}</b><span>Results published</span></Paper></Box>
+    <Box className="category-grid">{categories.map((category) => {
+      const items = competitions.filter(c => c.eventId === category.id);
+      const live = items.some(c => c.status === 'LIVE');
+      return <Paper component={RouterLink} to={`/events/${category.id}`} key={category.id} className="category-card" elevation={0}>
+        <Box className="category-top"><span className="category-icon">{category.icon}</span><Chip size="small" label={live ? 'LIVE NOW' : `${items.length} COMPETITIONS`} className={live ? 'live-chip' : 'quiet-chip'} /></Box>
+        <Typography variant="h5">{category.name}</Typography><Typography color="text.secondary">{category.description}</Typography>
+        <Box className="category-bottom"><span>{category.format.replace('_', ' ')} FORMAT</span><ArrowForwardRoundedIcon /></Box>
+      </Paper>;
+    })}</Box>
+  </Layout>;
 }

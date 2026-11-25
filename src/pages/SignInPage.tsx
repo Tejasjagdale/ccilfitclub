@@ -19,7 +19,7 @@ export default function SignInPage() {
       return;
     }
     // Every successful sign-in lands on Home. Role-based route guards handle access.
-    navigate(user.role === 'ADMIN' ? '/' : `/athletes/${encodeURIComponent(user.employeeId)}`, { replace: true });
+    navigate('/', { replace: true });
   };
 
   return <Layout>

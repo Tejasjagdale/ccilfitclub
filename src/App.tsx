@@ -25,13 +25,13 @@ function RequireAdmin({ children }: { children: ReactNode }) {
 
 function GuestOnly({ children }: { children: ReactNode }) {
   const { currentUser } = useAppData();
-  return currentUser ? <Navigate to={currentUser.role === 'ATHLETE' ? `/athletes/${encodeURIComponent(currentUser.employeeId)}` : '/'} replace /> : <>{children}</>;
+  return currentUser ? <Navigate to="/" replace /> : <>{children}</>;
 }
 
 function RoleLanding() {
   const { currentUser } = useAppData();
   if (!currentUser) return <Navigate to="/signin" replace />;
-  if (currentUser.role === 'ATHLETE') return <Navigate to={`/athletes/${encodeURIComponent(currentUser.employeeId)}`} replace />;
+  if (currentUser.role === 'ADMIN' && currentUser.status === 'ACTIVE') return <Navigate to="/admin" replace />;
   return <HomePage />;
 }
 

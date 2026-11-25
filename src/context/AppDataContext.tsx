@@ -59,6 +59,7 @@ interface AppContextValue extends AppData {
   register: (competitionId: string, userId: string) => void;
   createEdition: (competition: Omit<Competition, 'createdBy'>, category?: EventCategory) => void;
   createCompetition: (competition: Omit<Competition, 'id' | 'createdBy'>) => void;
+  deleteEdition: (id: string) => void;
   setCompetitionStatus: (id: string, status: CompetitionStatus) => void;
   saveResult: (result: Omit<CompetitionResult, 'id' | 'updatedAt'>) => void;
   saveRecord: (record: Omit<EventRecord, 'id'>) => void;
@@ -95,6 +96,15 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     register: (competitionId, userId) => setData((d) => { const competition = d.competitions.find(c => c.id === competitionId); const user = d.users.find(u => u.id === userId); const count = d.registrations.filter(r => r.competitionId === competitionId && r.status === 'REGISTERED').length; const today = localDateKey(); const open = d.currentUserId === userId && competition?.status === 'REGISTRATION_OPEN' && competition.registrationDeadline >= today && (!competition.registrationStart || competition.registrationStart <= today) && count < (competition.capacity || Infinity) && user?.role === 'ATHLETE' && user.status === 'ACTIVE'; if (!open || d.registrations.some(r => r.competitionId === competitionId && r.userId === userId && r.status === 'REGISTERED')) return d; return { ...d, registrations: [...d.registrations, { id: `r-${Date.now()}-${Math.random().toString(36).slice(2,7)}`, competitionId, userId, status: 'REGISTERED', registeredAt: new Date().toISOString() }] }; }),
     createEdition: (edition, category) => setData(d => !isAdminSession(d) ? d : ({ ...d, customCategories: category ? [...(d.customCategories ?? []), category] : d.customCategories, competitions: [...d.competitions, { ...edition, createdBy: d.currentUserId! }] })),
     createCompetition: (competition) => setData((d) => !isAdminSession(d) ? d : ({ ...d, competitions: [...d.competitions, { ...competition, id: `c-${Date.now()}`, createdBy: d.currentUserId! }] })),
+    deleteEdition: id => setData(d => {
+      if (!isAdminSession(d)) return d;
+      return { ...d,
+        competitions: d.competitions.filter(c => c.id !== id),
+        registrations: d.registrations.filter(r => r.competitionId !== id),
+        results: d.results.filter(r => r.competitionId !== id),
+        records: d.records.filter(r => r.competitionId !== id)
+      };
+    }),
     setCompetitionStatus: (id, status) => setData((d) => { if (!isAdminSession(d)) return d; const current = d.competitions.find(c => c.id === id); if (!current) return d; const transitions: Record<CompetitionStatus, CompetitionStatus[]> = { DRAFT: ['REGISTRATION_OPEN','UPCOMING','CANCELLED'], REGISTRATION_OPEN: ['UPCOMING','LIVE','CANCELLED'], UPCOMING: ['LIVE','CANCELLED'], LIVE: ['COMPLETED','CANCELLED'], COMPLETED: [], CANCELLED: [] }; if (!transitions[current.status].includes(status)) return d; return { ...d, competitions: d.competitions.map(c => c.id === id ? { ...c, status } : c), results: status === 'COMPLETED' ? d.results.map(r => r.competitionId === id ? { ...r, status: 'FINAL' } : r) : d.results }; }),
     saveResult: (result) => setData((d) => { if (!isAdminSession(d) || d.competitions.find(c => c.id === result.competitionId)?.status !== 'LIVE') return d; const existing = d.results.find((r) => r.competitionId === result.competitionId && r.userId === result.userId && r.stage === result.stage); const next = { ...result, id: existing?.id ?? `res-${crypto.randomUUID()}`, status: 'PENDING' as const, updatedAt: new Date().toISOString() }; return { ...d, results: existing ? d.results.map((r) => r.id === existing.id ? next : r) : [...d.results, next] }; }),
     saveRecord: (record) => setData((d) => { if (!isAdminSession(d) || d.competitions.find(c => c.id === record.competitionId)?.status !== 'COMPLETED') return d; return { ...d, records: [...d.records.filter(r => !(record.recordType === 'ALL_TIME' && r.eventId === record.eventId && r.recordType === 'ALL_TIME' && r.metric === record.metric)), { ...record, id: `rec-${Date.now()}` }] }; }),

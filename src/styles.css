@@ -1009,3 +1009,14 @@ a, button, .MuiButtonBase-root { -webkit-tap-highlight-color: transparent; }
   .trophy-cabinet__shelf { padding: 10px !important; }
   .cabinet-award { min-width: 0 !important; }
 }
+
+.board-nav,.edition-heading {display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.board-nav {margin:24px 0;padding:6px;background:#e7ebe3;border-radius:14px;width:fit-content}
+.edition-heading {justify-content:space-between;margin-bottom:18px}
+.edition-row {display:flex;align-items:center;gap:16px;width:100%;border:0;border-top:1px solid #e2e7df;background:transparent;padding:16px 0;color:inherit;text-align:left;font:inherit}
+button.edition-row {cursor:pointer}
+button.edition-row:hover {background:#f5f7f1}
+.edition-date {display:grid;place-items:center;background:#eff3e9;border-radius:10px;min-width:48px;padding:6px;font-size:11px;text-transform:uppercase}
+.edition-date b {font-size:21px;line-height:1.1}
+.edition-name {flex:1;min-width:0;display:grid;gap:4px}
+.edition-name small {color:#66736d}

@@ -1020,3 +1020,9 @@ button.edition-row:hover {background:#f5f7f1}
 .edition-date b {font-size:21px;line-height:1.1}
 .edition-name {flex:1;min-width:0;display:grid;gap:4px}
 .edition-name small {color:#66736d}
+
+.home-event-row.joined-edition { background: rgba(172,198,151,.12) !important; }
+@media (max-width: 700px) {
+  .home-event-row > .MuiBox-root:last-child { grid-column: 2 / -1; }
+  .home-event-row > .MuiBox-root:last-child .MuiChip-root { margin-left: 0; }
+}

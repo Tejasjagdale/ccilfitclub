@@ -9,8 +9,8 @@ import { useAppData } from '../context/AppDataContext';
 import type { UserRole, UserStatus } from '../types/domain';
 
 export default function AdminPage() {
-  const { currentUser, users, categories, competitions, registrations, results, records, updateCompetition, setCompetitionStatus, saveResult, saveRecord, addUser, updateUser } = useAppData();
-  const [view, setView] = useState('Editions');
+  const { currentUser, users, categories, competitions, registrations, results, records, deleteEdition, updateCompetition, setCompetitionStatus, saveResult, saveRecord, addUser, updateUser } = useAppData();
+  const [view, setView] = useState('Create edition');
   const [filter, setFilter] = useState('');
   function manage(id: string) { setSelectedCompetition(id); setView('Manage'); }
   const [selectedCompetition, setSelectedCompetition] = useState(competitions.find(c => c.status === 'LIVE')?.id ?? competitions[0]?.id ?? '');
@@ -44,10 +44,16 @@ export default function AdminPage() {
         {selected && <><Box className="competition-admin-meta"><span>{category?.name} · {selected.quarter} {selected.year}</span><span>{registrations.filter(r => r.competitionId === selected.id && r.status === 'REGISTERED').length}/{selected.capacity} registered</span><span>Starts: {new Date(selected.startAt).toLocaleString()}</span></Box>
           {['DRAFT','REGISTRATION_OPEN','UPCOMING'].includes(selected.status) && <Box className="admin-deadline-editor"><TextField label="Last date for registration" type="date" size="small" InputLabelProps={{ shrink: true }} value={selectedDeadline} onChange={e => setSelectedDeadline(e.target.value)} /><Button variant="outlined" onClick={saveDeadline}>Save deadline</Button></Box>}
           <Box className="status-actions">
+            <Button color="error" onClick={() => {
+              if (!window.confirm(`Delete ${selected.name} and its registrations, scores and records? This cannot be undone.`)) return;
+              deleteEdition(selected.id);
+              setSelectedCompetition(competitions.find(c => c.id !== selected.id)?.id ?? '');
+              setView('Editions');
+            }}>Delete edition</Button>
             {selected.status === 'DRAFT' && <Button onClick={() => setCompetitionStatus(selected.id, 'REGISTRATION_OPEN')} variant="contained">Open registration</Button>}
             {['DRAFT','REGISTRATION_OPEN'].includes(selected.status) && <Button onClick={() => setCompetitionStatus(selected.id, 'UPCOMING')} variant="outlined">Mark upcoming</Button>}
             {['REGISTRATION_OPEN','UPCOMING'].includes(selected.status) && <Button onClick={() => setCompetitionStatus(selected.id, 'LIVE')} variant="contained" color="success" startIcon={<PlayArrowRoundedIcon/>}>Start event</Button>}
-            {selected.status === 'LIVE' && <Button onClick={() => setCompetitionStatus(selected.id, 'COMPLETED')} variant="contained">Complete event</Button>}
+            {selected.status === 'LIVE' && <Button onClick={() => setCompetitionStatus(selected.id, 'COMPLETED')} variant="contained">End event</Button>}
             {!['COMPLETED','CANCELLED'].includes(selected.status) && <Button onClick={() => setCompetitionStatus(selected.id, 'CANCELLED')} variant="outlined" color="error">Cancel event</Button>}
           </Box>
           <Typography className="admin-help">Open registration to allow eligible active athletes to opt in. Start event when the competition begins. Score entry is enabled only while the event is live.</Typography>

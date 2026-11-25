@@ -28,7 +28,7 @@ export default function EventsPage() {
         })}
       </Box> : <Paper className="home-events-empty" elevation={0}><Typography fontWeight={600}>No competitions are open for registration right now</Typography><Typography color="text.secondary" fontSize={13}>Check back soon. New competitions will appear here when registration opens.</Typography></Paper>}
     </> : <>
-    <Box className="page-heading"><Typography className="overline">THE SPORTS CALENDAR</Typography><Typography variant="h1">Events</Typography><Typography color="text.secondary">Six fixed disciplines. New competitions every quarter. One place for every result and record.</Typography></Box>
+    <Box className="page-heading"><Typography className="overline">THE SPORTS CALENDAR</Typography><Typography variant="h1">Events</Typography><Typography color="text.secondary">Browse disciplines, competition editions and verified records.</Typography></Box>
     <Box className="competition-summary-grid"><Paper elevation={0}><b>{competitions.length}</b><span>Competitions created</span></Paper><Paper elevation={0}><b>{competitions.filter(c => c.status === 'LIVE').length}</b><span>Live right now</span></Paper><Paper elevation={0}><b>{registrations.filter(r => r.status === 'REGISTERED').length}</b><span>Registrations</span></Paper><Paper elevation={0}><b>{results.length}</b><span>Results published</span></Paper></Box>
     <Box className="category-grid">{categories.map((category) => {
       const items = competitions.filter(c => c.eventId === category.id);

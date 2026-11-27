@@ -6,7 +6,7 @@ export default function Brand({ light = false }: { light?: boolean }) {
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.1 }}>
       <Box className="brand-mark"><BoltRoundedIcon sx={{ fontSize: 23 }} /></Box>
       <Typography className={`brand-word ${light ? 'brand-light' : ''}`}>pulse<span>.</span></Typography>
-    </Box
+    </Box>
 
   );
 }

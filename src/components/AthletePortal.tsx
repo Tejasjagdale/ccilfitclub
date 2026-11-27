@@ -49,7 +49,7 @@ export default function AthletePortal() {
           </li>
           <Divider component="li" />
           <MenuItem component={Link} to="/me" onClick={() => setAnchor(null)}><EmojiEventsOutlined />Trophy cabinet</MenuItem>
-          <MenuItem onClick={() => { setAnchor(null); signOut(); navigate('/signin', { replace: true }); }}><LogoutRounded />Sign out</MenuItem>
+          <MenuItem onClick={async () => { setAnchor(null); await signOut(); navigate('/signin', { replace: true }); }}><LogoutRounded />Sign out</MenuItem>
         </Menu>
       </div>
     </header>

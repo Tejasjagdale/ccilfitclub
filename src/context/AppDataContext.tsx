@@ -1,8 +1,14 @@
 import { dateAfter } from '../data/dateAfter';
+import { Snackbar } from '@mui/material';
+import { ADMIN_EMPLOYEE_ID, emptyAppData, type AppData } from '../data/appData';
+import { awardsByAthlete } from '../data/demoAwards';
+import { firebaseEnabled } from '../firebase/config';
+import type { CloudSession, WriteScope } from '../firebase/backend';
 import { canStart, creatableSports, eventDay, registrationOpen, validDay, type CreatableSport } from '../data/competitionLifecycle';
 import { finishSeconds, normalizeFinishTime, sameMatch, validateMatch } from '../data/scoring';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import type { AppUser, Competition, CompetitionResult, EventCategory, EventRecord, Registration, KnockoutMatch } from '../types/domain';
+import type { AppUser, Competition, CompetitionResult, EventCategory, EventRecord, RecordEntry, Registration, KnockoutMatch } from '../types/domain';
+import { cleanMetric, matchesAllTimeMetric, recordHolderIds } from '../data/eventRecords';
 
 const STORAGE_KEY = 'offpace-app-v1';
 const SESSION_KEY = 'offpace-session-user';
@@ -15,7 +21,7 @@ const categories: EventCategory[] = [
   { id: 'ZENGA', name: 'Zenga', format: 'POINTS', scoreLabel: 'Score', unit: 'points', icon: '▥', description: 'Steady hands and nerve under pressure.' },
 ];
 const users: AppUser[] = [
-  { id: 'u-admin', firstName: 'Club', lastName: 'Admin', employeeId: 'ADM001', status: 'ACTIVE', role: 'ADMIN', department: 'People & Culture', team: 'Organisers', joinedOn: '2024' },
+  { id: 'u-admin', firstName: 'Club', lastName: 'Admin', employeeId: ADMIN_EMPLOYEE_ID, status: 'ACTIVE', role: 'ADMIN', department: 'People & Culture', team: 'Organisers', joinedOn: '2024' },
   { id: 'u-1', firstName: 'Aarav', lastName: 'Mehta', employeeId: 'EMP001', status: 'ACTIVE', role: 'ATHLETE', department: 'Platform Engineering', team: 'Engineering', joinedOn: '2022' },
   { id: 'u-2', firstName: 'Maya', lastName: 'Iyer', employeeId: 'EMP002', status: 'ACTIVE', role: 'ATHLETE', department: 'Design', team: 'Product', joinedOn: '2021' },
   { id: 'u-3', firstName: 'Kabir', lastName: 'Shah', employeeId: 'EMP003', status: 'ACTIVE', role: 'ATHLETE', department: 'Finance', team: 'Operations', joinedOn: '2023' },
@@ -55,17 +61,6 @@ const records: EventRecord[] = [
   { id: 'rec-tt', eventId: 'TABLE_TENNIS', userId: 'u-4', competitionId: 'c-tt-q3', recordType: 'UNIQUE', metric: 'Clean-sheet final', value: '3–0', achievedAt: '2026-07-18', note: 'First recorded clean-sheet final in the office league.', verifiedBy: 'u-admin' },
 ];
 
-interface AppData {
-  customCategories?: EventCategory[];
-  users: AppUser[];
-  competitions: Competition[];
-  registrations: Registration[];
-  results: CompetitionResult[];
-  matches: KnockoutMatch[];
-  records: EventRecord[];
-  currentUserId: string | null;
-}
-
 type UserDetails = Pick<AppUser, 'firstName' | 'lastName' | 'employeeId'>;
 type MatchInput = Omit<KnockoutMatch, 'id'>;
 type ResultInput = Pick<CompetitionResult, 'competitionId' | 'userId' | 'score' | 'detail'> & { rank?: number };
@@ -75,38 +70,45 @@ interface AppContextValue extends AppData {
   categories: EventCategory[];
   currentUser: AppUser | null;
   today: string;
-  signIn: (employeeId: string) => AppUser | null;
-  signOut: () => void;
-  register: (competitionId: string, userId: string) => void;
-  createCompetition: (sport: CreatableSport, deadline: string) => string | null;
-  deleteEdition: (id: string) => void;
-  setCompetitionStatus: (id: string, status: NextStatus) => void;
-  saveResult: (result: ResultInput) => void;
-  saveMatch: (match: MatchInput) => void;
-  saveRecord: (record: Omit<EventRecord, 'id'>) => void;
-  addUser: (user: UserDetails) => void;
-  removeUser: (id: string) => void;
-  updateDeadline: (id: string, deadline: string) => void;
+  firebaseEnabled: boolean;
+  loading: boolean;
+  connectionError: string;
+  signIn: (employeeId: string) => Promise<boolean>;
+  signOut: () => Promise<void>;
+  importDemo: () => Promise<boolean>;
+  register: (competitionId: string, userId: string) => Promise<boolean>;
+  createCompetition: (sport: CreatableSport, deadline: string) => Promise<string | null>;
+  deleteEdition: (id: string) => Promise<boolean>;
+  setCompetitionStatus: (id: string, status: NextStatus) => Promise<boolean>;
+  saveResult: (result: ResultInput) => Promise<boolean>;
+  saveMatch: (match: MatchInput) => Promise<boolean>;
+  saveRecord: (record: RecordEntry, replaceId?: string) => Promise<string | undefined>;
+  addUser: (user: UserDetails) => Promise<boolean>;
+  removeUser: (id: string) => Promise<boolean>;
+  updateDeadline: (id: string, deadline: string) => Promise<boolean>;
 }
 
 const AppDataContext = createContext<AppContextValue | null>(null);
 const admin = users[0];
+const demoData = { users, competitions, registrations, results, records, matches: [], awards: awardsByAthlete };
+const loadFirebase = () => import('../firebase/backend');
+const message = (error: unknown) => error instanceof Error ? error.message : 'Unable to reach Firebase.';
 
 function isAdminSession(data: AppData) {
   return data.currentUserId === admin.id && data.users.some(user => user.id === admin.id && user.role === 'ADMIN' && user.status === 'ACTIVE');
 }
 
 function readInitial(): AppData {
-  let persisted: Omit<AppData, 'currentUserId'> = { users, competitions, registrations, results, records, matches: [] };
+  let persisted: Omit<AppData, 'currentUserId'> = demoData;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as AppData;
       const roster = parsed.users.map(user => user.id === admin.id
-        ? { ...user, role: admin.role, status: admin.status }
+        ? { ...user, employeeId: admin.employeeId, role: admin.role, status: admin.status }
         : user.role === 'ADMIN' ? { ...user, role: 'ATHLETE' as const } : user);
       if (!roster.some(user => user.id === admin.id)) roster.unshift(admin);
-      persisted = { ...parsed, users: roster, matches: parsed.matches ?? [] };
+      persisted = { ...parsed, users: roster, matches: parsed.matches ?? [], awards: parsed.awards ?? awardsByAthlete };
     }
   } catch {
     // Fall back to the starter data if an older store cannot be read.
@@ -119,8 +121,27 @@ function isEntrant(data: AppData, competitionId: string, userId: string) {
   return data.registrations.some(r => r.competitionId === competitionId && r.userId === userId && r.status === 'REGISTERED');
 }
 
-function getCategory(data: AppData, competition: Competition) {
+function getCategory(data: AppData, competition: Pick<Competition, 'eventId'>) {
   return categories.find(c => c.id === competition.eventId) ?? data.customCategories?.find(c => c.id === competition.eventId);
+}
+
+function recordError(data: AppData, record: RecordEntry) {
+  if (!isAdminSession(data)) return 'Sign in as the administrator to publish records.';
+  if (!getCategory(data, record)) return 'Select a sport.';
+  if (!validDay(record.achievedAt) || record.achievedAt > eventDay()) return 'Enter an achievement date of today or earlier.';
+  if (!record.metric || !record.value || record.metric.length > 120 || record.value.length > 100 || record.note.length > 1000) {
+    return 'Enter a record name and performance within the field limits.';
+  }
+  const holder = data.users.find(user => user.id === record.userId && user.role === 'ATHLETE');
+  if (!holder) return 'Select a record holder.';
+  if (!record.competitionId) {
+    if (record.recordType === 'UNIQUE') return 'Select a completed edition for this achievement.';
+    if (holder.status === 'REMOVED') return 'Select a holder from the athlete directory.';
+    return;
+  }
+  const edition = data.competitions.find(event => event.id === record.competitionId);
+  if (edition?.status !== 'COMPLETED' || edition.eventId !== record.eventId) return 'Select a completed edition of this sport.';
+  if (!recordHolderIds(edition.id, data.registrations, data.results).has(holder.id)) return 'Select an athlete who participated in this edition.';
 }
 
 function canTransition(competition: Competition, status: NextStatus, today: string) {
@@ -133,9 +154,18 @@ function canTransition(competition: Competition, status: NextStatus, today: stri
 }
 
 export function AppDataProvider({ children }: { children: ReactNode }) {
-  const [data, syncData] = useState<AppData>(readInitial);
+  const [data, syncData] = useState<AppData>(firebaseEnabled ? emptyAppData : readInitial);
   const [today, setToday] = useState(eventDay);
-  const setData = useCallback((update: (previous: AppData) => AppData) => {
+  const [session, setSession] = useState<CloudSession | null>(null);
+  const [loading, setLoading] = useState(firebaseEnabled);
+  const [connectionError, setConnectionError] = useState('');
+  const [writeError, setWriteError] = useState('');
+  const setData = useCallback(async (update: (previous: AppData) => AppData, scope?: WriteScope) => {
+    if (firebaseEnabled) {
+      if (!session) return false;
+      try { return await (await loadFirebase()).commit(session, update, scope); }
+      catch (error) { setWriteError(message(error)); return false; }
+    }
     const previous = readInitial();
     const next = update(previous);
     if (next !== previous) {
@@ -146,7 +176,41 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       else sessionStorage.removeItem(SESSION_KEY);
     }
     syncData(next);
+    return next !== previous;
+  }, [session]);
+
+  useEffect(() => {
+    if (!firebaseEnabled) return;
+    let active = true;
+    loadFirebase().then(backend => backend.restoreSession()).then(saved => {
+      if (!active) return;
+      setSession(saved);
+      if (!saved) setLoading(false);
+    }).catch(error => { if (active) { setConnectionError(message(error)); setLoading(false); } });
+    return () => { active = false; };
   }, []);
+
+  useEffect(() => {
+    if (!session) return;
+    let active = true;
+    let stop: (() => void) | undefined;
+    function failed(reason: string) {
+      if (!active) return;
+      active = false;
+      stop?.();
+      syncData(emptyAppData()); setSession(null); setLoading(false); setConnectionError(reason);
+    }
+    loadFirebase().then(backend => {
+      if (!active) return;
+      stop = backend.observeSession(session, next => {
+        if (active) { syncData(next); setLoading(false); setConnectionError(''); }
+      }, reason => {
+        failed(reason);
+        void backend.endSession(null);
+      });
+    }).catch(error => failed(message(error)));
+    return () => { active = false; stop?.(); };
+  }, [session]);
 
   useEffect(() => {
     const refreshDay = () => setToday(eventDay());
@@ -156,6 +220,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (firebaseEnabled) return;
     const receiveUpdate = (event: StorageEvent) => {
       if (event.storageArea !== localStorage || (event.key !== null && event.key !== STORAGE_KEY)) return;
       const next = readInitial();
@@ -168,17 +233,29 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
 
   const currentUser = data.users.find(u => u.id === data.currentUserId && u.status !== 'REMOVED') ?? null;
   const value = useMemo<AppContextValue>(() => ({
-    ...data, categories: [...categories, ...(data.customCategories ?? [])], currentUser, today,
-    signIn: employeeId => {
+    ...data, categories: [...categories, ...(data.customCategories ?? [])], currentUser, today, firebaseEnabled, loading, connectionError,
+    signIn: async employeeId => {
+      if (firebaseEnabled) {
+        const next = await (await loadFirebase()).signInEmployee(employeeId);
+        setConnectionError(''); setLoading(true); setSession(next);
+        return true;
+      }
       const normalized = employeeId.trim().toUpperCase();
       const found = readInitial().users.find(u => u.status !== 'REMOVED' && u.employeeId.trim().toUpperCase() === normalized);
-      if (found) setData(d => ({ ...d, currentUserId: found.id }));
-      return found ?? null;
+      if (found) await setData(d => ({ ...d, currentUserId: found.id }));
+      return Boolean(found);
     },
-    signOut: () => setData(d => ({ ...d, currentUserId: null })),
+    signOut: async () => {
+      if (!firebaseEnabled) { await setData(d => ({ ...d, currentUserId: null })); return; }
+      setSession(null); syncData(emptyAppData()); setConnectionError('');
+      try { await (await loadFirebase()).endSession(session); }
+      catch (error) { setConnectionError(message(error)); }
+    },
+    importDemo: () => setData(d => isAdminSession(d) && !d.competitions.length && !d.records.length && d.users.every(user => user.role === 'ADMIN')
+      ? { ...d, ...demoData } : d, { initialize: true }),
     register: (competitionId, userId) => {
       const entry: Registration = { id: crypto.randomUUID(), competitionId, userId, status: 'REGISTERED', registeredAt: new Date().toISOString() };
-      setData(d => {
+      return setData(d => {
         const competition = d.competitions.find(c => c.id === competitionId);
         const user = d.users.find(u => u.id === userId);
         if (!competition || !registrationOpen(competition, eventDay()) || d.currentUserId !== userId ||
@@ -186,9 +263,9 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         const count = d.registrations.filter(r => r.competitionId === competitionId && r.status === 'REGISTERED').length;
         if (competition.capacity > 0 && count >= competition.capacity) return d;
         return { ...d, registrations: [...d.registrations, entry] };
-      });
+      }, { eventId: competitionId });
     },
-    createCompetition: (sport, deadline) => {
+    createCompetition: async (sport, deadline) => {
       const today = eventDay();
       const category = creatableSports.includes(sport) && categories.find(c => c.id === sport);
       if (!isAdminSession(data) || !category || !validDay(deadline) || deadline < today) return null;
@@ -200,8 +277,8 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         description: category.description, registrationStart: today, registrationDeadline: deadline,
         startAt: '', endAt: '', status: 'REGISTRATION_OPEN', capacity: 0, createdBy: admin.id,
       };
-      setData(d => isAdminSession(d) ? { ...d, competitions: [competition, ...d.competitions] } : d);
-      return id;
+      const saved = await setData(d => isAdminSession(d) ? { ...d, competitions: [competition, ...d.competitions] } : d);
+      return saved ? id : null;
     },
     deleteEdition: id => setData(d => !isAdminSession(d) ? d : ({
       ...d,
@@ -210,11 +287,11 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       results: d.results.filter(r => r.competitionId !== id),
       matches: d.matches.filter(m => m.competitionId !== id),
       records: d.records.filter(r => r.competitionId !== id),
-    })),
+    }), { eventId: id }),
     setCompetitionStatus: (id, status) => {
       const now = new Date();
       const stamp = now.toISOString();
-      setData(d => {
+      return setData(d => {
         const current = d.competitions.find(c => c.id === id);
         if (!isAdminSession(d) || !current || !canTransition(current, status, eventDay(now))) return d;
         const next = { ...current, status };
@@ -224,12 +301,12 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
           ...d, competitions: d.competitions.map(c => c.id === id ? next : c),
           results: status === 'COMPLETED' ? d.results.map(r => r.competitionId === id ? { ...r, status: 'FINAL' } : r) : d.results,
         };
-      });
+      }, { eventId: id });
     },
     saveResult: input => {
       const id = crypto.randomUUID();
       const updatedAt = new Date().toISOString();
-      setData(d => {
+      return setData(d => {
         const event = d.competitions.find(c => c.id === input.competitionId);
         if (!isAdminSession(d) || !event || event.status !== 'LIVE' || !isEntrant(d, event.id, input.userId)) return d;
         const category = getCategory(d, event);
@@ -252,12 +329,12 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
           return [row.id, rank];
         }));
         return { ...d, results: next.map(r => ranks.has(r.id) ? { ...r, rank: ranks.get(r.id)! } : r) };
-      });
+      }, { eventId: input.competitionId });
     },
     saveMatch: input => {
       const id = crypto.randomUUID();
       const updatedAt = new Date().toISOString();
-      setData(d => {
+      return setData(d => {
         const event = d.competitions.find(c => c.id === input.competitionId);
         if (!isAdminSession(d) || !event || event.status !== 'LIVE' || getCategory(d, event)?.format !== 'KNOCKOUT') return d;
         const stage = input.stage.trim().toUpperCase();
@@ -276,26 +353,34 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
           ...d, matches: [...d.matches.filter(m => m.id !== existing?.id), { ...match, id: existing?.id ?? id }],
           results: [...d.results.filter(r => !(r.competitionId === event.id && r.stage === stage && (r.userId === winner.id || r.userId === opponent.id))), ...resultRows],
         };
-      });
+      }, { eventId: input.competitionId });
     },
-    saveRecord: record => {
-      const id = crypto.randomUUID();
-      setData(d => {
-        if (!isAdminSession(d) || d.competitions.find(c => c.id === record.competitionId)?.status !== 'COMPLETED') return d;
-        const other = d.records.filter(r => !(record.recordType === 'ALL_TIME' && r.eventId === record.eventId && r.recordType === 'ALL_TIME' && r.metric === record.metric));
-        return { ...d, records: [...other, { ...record, id }] };
-      });
+    saveRecord: async (input, replaceId) => {
+      const record = { ...input, metric: cleanMetric(input.metric), value: input.value.trim(), note: input.note.trim() };
+      let error: string | undefined;
+      const saved = await setData(d => {
+        error = recordError(d, record);
+        if (error) return d;
+        const existing = d.records.find(entry => matchesAllTimeMetric(entry, record));
+        if (existing?.id !== replaceId) {
+          error = 'This record changed while the form was open. Review the current record and try again.';
+          return d;
+        }
+        const other = d.records.filter(entry => !matchesAllTimeMetric(entry, record));
+        return { ...d, records: [...other, { ...record, id: existing?.id ?? crypto.randomUUID(), verifiedBy: admin.id }] };
+      }, { eventId: record.competitionId });
+      return error ?? (saved ? undefined : 'The record could not be saved.');
     },
     addUser: input => {
       const firstName = input.firstName.trim();
       const lastName = input.lastName.trim();
       const employeeId = input.employeeId.trim().toUpperCase();
-      if (!firstName || !lastName || !employeeId) return;
+      if (!firstName || !lastName || !employeeId || employeeId.length > 32) return Promise.resolve(false);
       const user: AppUser = {
         firstName, lastName, employeeId, id: crypto.randomUUID(), status: 'ACTIVE',
         role: 'ATHLETE', department: '', team: '', joinedOn: eventDay().slice(0, 4),
       };
-      setData(d => !isAdminSession(d) || d.users.some(u => u.status !== 'REMOVED' && u.employeeId.trim().toUpperCase() === employeeId)
+      return setData(d => !isAdminSession(d) || d.users.some(u => u.status !== 'REMOVED' && u.employeeId.trim().toUpperCase() === employeeId)
         ? d : { ...d, users: [...d.users, user] });
     },
     removeUser: id => setData(d => {
@@ -307,16 +392,18 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         registrations: d.registrations.map(r => r.userId === id && pending.has(r.competitionId) && r.status === 'REGISTERED'
           ? { ...r, status: 'WITHDRAWN' } : r),
       };
-    }),
+    }, { employeeRemoval: true }),
     updateDeadline: (id, deadline) => setData(d => {
       const competition = d.competitions.find(c => c.id === id);
       if (!isAdminSession(d) || !competition || !['DRAFT', 'REGISTRATION_OPEN', 'UPCOMING'].includes(competition.status) ||
         !validDay(deadline) || deadline < eventDay() || deadline < competition.registrationStart) return d;
       return { ...d, competitions: d.competitions.map(c => c.id === id ? { ...c, registrationDeadline: deadline } : c) };
     }),
-  }), [data, currentUser, setData, today]);
+  }), [data, currentUser, setData, today, session, loading, connectionError]);
 
-  return <AppDataContext.Provider value={value}>{children}</AppDataContext.Provider>;
+  return <AppDataContext.Provider value={value}>{children}
+    <Snackbar open={Boolean(writeError)} message={writeError} autoHideDuration={5000} onClose={() => setWriteError('')} />
+  </AppDataContext.Provider>;
 }
 
 export function useAppData() {

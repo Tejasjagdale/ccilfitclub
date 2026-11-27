@@ -1,7 +1,8 @@
 import type { AppUser, Competition, CompetitionResult } from '../types/domain';
 
-export function eventLink(event: Pick<Competition, 'id' | 'eventId'>) {
-  return `/events/${encodeURIComponent(event.eventId)}?competition=${encodeURIComponent(event.id)}`;
+export function eventLink(event: Pick<Competition, 'eventId'> & { id?: string }) {
+  const path = `/events/${encodeURIComponent(event.eventId)}`;
+  return event.id ? `${path}?competition=${encodeURIComponent(event.id)}` : path;
 }
 
 export function editionDate(event: Competition) {

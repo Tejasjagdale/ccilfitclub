@@ -3,23 +3,27 @@ import { useNavigate } from 'react-router-dom';
 import { Alert, Box, Button, Paper, TextField, Typography } from '@mui/material';
 import Layout from '../components/Layout';
 import { useAppData } from '../context/AppDataContext';
+import { ADMIN_EMPLOYEE_ID } from '../data/appData';
 
 export default function SignInPage() {
   const [employeeId, setEmployeeId] = useState('');
   const [error, setError] = useState('');
-  const { signIn } = useAppData();
+  const [busy, setBusy] = useState(false);
+  const { signIn, firebaseEnabled, connectionError } = useAppData();
   const navigate = useNavigate();
 
-  const submit = (event: FormEvent) => {
+  const submit = async (event: FormEvent) => {
     event.preventDefault();
     setError('');
-    const user = signIn(employeeId);
-    if (!user) {
-      setError('Employee ID not found. Contact an administrator if you need access.');
-      return;
+    setBusy(true);
+    try {
+      if (await signIn(employeeId)) navigate('/', { replace: true });
+      else setError('Employee ID not found. Contact an administrator if you need access.');
+    } catch (failure) {
+      setError(failure instanceof Error ? failure.message : 'Sign-in is unavailable. Try again.');
+    } finally {
+      setBusy(false);
     }
-    // Every successful sign-in lands on Home. Role-based route guards handle access.
-    navigate('/', { replace: true });
   };
 
   return <Layout>
@@ -28,17 +32,17 @@ export default function SignInPage() {
         <Typography className="overline">OFF•PACE · EMPLOYEE ACCESS</Typography>
         <Typography variant="h1">Sign in</Typography>
         <Typography color="text.secondary" fontSize={13}>Enter your employee ID to continue to the company events portal.</Typography>
-        {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+        {(error || connectionError) && <Alert severity="error" sx={{ mt: 2, overflowWrap: 'anywhere' }}>{error || connectionError}</Alert>}
         <Box component="form" onSubmit={submit} sx={{ mt: 3 }}>
           <Typography className="form-label">Employee ID</Typography>
           <TextField fullWidth placeholder="e.g. EMP001" size="small" value={employeeId} onChange={event => setEmployeeId(event.target.value.toUpperCase())} required autoFocus autoComplete="username" inputProps={{ maxLength: 32 }} />
-          <Button fullWidth variant="contained" type="submit" sx={{ mt: 2 }}>Continue</Button>
+          <Button fullWidth variant="contained" type="submit" disabled={busy} sx={{ mt: 2 }}>{busy ? 'Signing in…' : 'Continue'}</Button>
         </Box>
-        <Box className="demo-login-note">
+        {!firebaseEnabled && <Box className="demo-login-note">
           <b>Demo sign-in</b>
-          <span>Athlete: EMP001 · Admin: ADM001</span>
+          <span>Athlete: EMP001 · Admin: {ADMIN_EMPLOYEE_ID}</span>
           <small>This source-only prototype checks the employee ID against its local roster. Employee ID alone is not secure authentication. Before production, connect this screen to company SSO or a server-side verified sign-in flow.</small>
-        </Box>
+        </Box>}
         <Typography className="auth-foot">Need access? Contact your event administrator.</Typography>
       </Paper>
     </Box>

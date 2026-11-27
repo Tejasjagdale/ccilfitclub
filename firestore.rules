@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function adminPath() { return /databases/$(database)/documents/settings/admin; }
+    function accountPath(uid) { return /databases/$(database)/documents/access/$(uid); }
+    function employeePath(key) { return /databases/$(database)/documents/employeeKeys/$(key); }
+    function anonymous() {
+      return request.auth != null && request.auth.token.firebase.sign_in_provider == 'anonymous';
+    }
+    function admin() { return anonymous() && get(adminPath()).data.uid == request.auth.uid; }
+    function account() { return get(accountPath(request.auth.uid)).data; }
+    function athlete() {
+      return anonymous() && get(employeePath(account().k)).data.p == account().p;
+    }
+    function canRead() { return admin() || athlete(); }
+    function owns(uid) { return anonymous() && request.auth.uid == uid; }
+
+    match /settings/admin {
+      allow get: if anonymous() && resource.data.uid == request.auth.uid;
+    }
+    match /employeeKeys/{key} {
+      // An employee must know the exact ID. This collection cannot be listed.
+      allow get: if anonymous();
+      allow create, update, delete: if admin();
+    }
+    match /access/{uid} {
+      allow get, delete: if owns(uid);
+      allow create, update: if owns(uid) &&
+        request.resource.data.keys().hasOnly(['p', 'k']) &&
+        request.resource.data.k is string && request.resource.data.k.size() <= 400 &&
+        request.resource.data.p is string && request.resource.data.p != 'u-admin' &&
+        get(employeePath(request.resource.data.k)).data.p == request.resource.data.p;
+    }
+    match /core/{name} {
+      allow get: if name in ['directory', 'events', 'records'] && canRead();
+      allow get: if name == 'employeeIds' && admin();
+      allow create, update, delete: if name in ['directory', 'employeeIds', 'events', 'records'] && admin();
+    }
+
+    function validRegistration(eventId) {
+      let person = account().p;
+      let user = get(/databases/$(database)/documents/core/directory).data.u[person];
+      let event = get(/databases/$(database)/documents/core/events).data.e[eventId];
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      let roster = request.resource.data.r;
+      return user[2] == 'A' && event.s == 'REGISTRATION_OPEN' &&
+        request.time.toMillis() < event.d && request.time.toMillis() >= event.b &&
+        changed.hasOnly(['r']) && roster.diff(resource.data.r).affectedKeys().hasOnly([person]) &&
+        !(person in resource.data.r) && person in roster &&
+        roster[person] is string && roster[person].size() <= 30 &&
+        (event.c == 0 || roster.size() <= event.c);
+    }
+    match /activity/{eventId} {
+      allow read: if canRead();
+      allow create, update, delete: if admin();
+      allow update: if athlete() && validRegistration(eventId);
+    }
+  }
+}

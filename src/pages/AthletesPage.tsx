@@ -27,7 +27,7 @@ export default function AthletesPage() {
       </Box>
       <Paper className="athlete-table" elevation={0}>
         <Box className="athlete-table-head"><span>EMPLOYEE</span><span>TEAM</span><span>STATUS</span><span /></Box>
-        {filtered.map((person, index) => <Box className="athlete-row" component={RouterLink} to={`/athletes/${encodeURIComponent(person.employeeId)}`} key={person.employeeId}>
+        {filtered.map((person, index) => <Box className="athlete-row" component={RouterLink} to={`/athletes/${encodeURIComponent(person.employeeId || person.id)}`} key={person.id}>
           <Box className="athlete-name-cell">
             <Avatar className={`athlete-avatar tone-${index % 5}`}>{person.firstName[0]}{person.lastName[0]}</Avatar>
             <Box><b>{person.firstName} {person.lastName}</b><small>{person.employeeId}</small></Box>

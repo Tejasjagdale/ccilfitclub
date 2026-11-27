@@ -1,0 +1,35 @@
+.ops-record-search { width: min(100%, 218px); }
+.ops-record-table td { padding-block: 14px; vertical-align: top; }
+.ops-record-table td:first-child { width: 32%; }
+.ops-record-table td:nth-child(2) { width: 20%; }
+.ops-record-table td:nth-child(3) { width: 15%; }
+.ops-record-table td:nth-child(4) { white-space: nowrap; }
+.ops-record-table td strong { display: block; color: var(--ops-ink); font-size: 13px; }
+.ops-record-table td small { display: block; margin-top: 3px; font-size: 11px; }
+.ops-record-table .ops-record-identity .ops-event-link { align-items: flex-start; }
+.ops-record-identity .ops-event-link > div { min-width: 0; overflow-wrap: anywhere; }
+.ops-record-value { display: inline-block; padding: 3px 8px; border-radius: 7px; background: #edf4e8; color: #305640; font-size: 12px; font-weight: 850; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.ops-shell a.ops-record-edition-link { color: #345d44; font-weight: 750; }
+.ops-record-edition-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.ops-record-note { margin-top: 5px; }
+.ops-record-note summary { width: fit-content; color: #446855; font-size: 11px; cursor: pointer; }
+.ops-record-note p { margin-top: 4px; color: var(--ops-muted); font-size: 11px; line-height: 1.45; }
+.ops-record-mobile-label { display: none; }
+
+.ops-record-dialog-help { margin: 0 0 16px; color: var(--ops-muted); font-size: 13px; line-height: 1.5; }
+.ops-record-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 14px 12px; padding-block: 1px 2px; }
+.ops-record-form > * { min-width: 0; }
+
+@media (max-width: 685px) {
+  .ops-record-table, .ops-record-table tbody { display: block; }
+  .ops-record-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .ops-record-table tr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px 13px; padding: 12px 14px; border-top: 1px solid #edf0ea; }
+  .ops-record-table td:nth-child(n) { width: auto; padding: 0; border: 0; white-space: normal; overflow-wrap: anywhere; }
+  .ops-record-table .ops-record-identity { grid-column: 1 / -1; }
+  .ops-record-table .ops-record-identity .pace-sport-icon { display: inline-grid; }
+  .ops-record-mobile-label { display: block; margin-bottom: 3px; color: var(--ops-muted); font-size: 10px; font-weight: 750; }
+}
+@media (max-width: 480px) {
+  .ops-record-search { width: 100%; }
+  .ops-record-form { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+}

@@ -13,12 +13,16 @@ export default function EventSchedule({ initialSport, onClose, onCreated }: Prop
   const [sport, setSport] = useState<CreatableSport | ''>(initialSport ?? '');
   const [deadline, setDeadline] = useState('');
   const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
 
-  function submit(event: FormEvent) {
+  async function submit(event: FormEvent) {
     event.preventDefault();
     if (!sport) { setError('Select an event type.'); return; }
-    const id = createCompetition(sport, deadline);
-    if (!id) { setError('Choose a registration deadline of today or later.'); return; }
+    if (!deadline || deadline < today) { setError('Choose a registration deadline of today or later.'); return; }
+    setSaving(true);
+    const id = await createCompetition(sport, deadline);
+    setSaving(false);
+    if (!id) { setError('The event could not be saved.'); return; }
     onCreated(id);
   }
 
@@ -45,7 +49,7 @@ export default function EventSchedule({ initialSport, onClose, onCreated }: Prop
           helperText="Registration opens immediately and closes at the end of this date (IST)." />
       </DialogContent>
       <DialogActions><Button className="ops-secondary" onClick={onClose}>Cancel</Button>
-        <Button className="ops-primary" type="submit" endIcon={<ArrowForwardRounded />}>Create event</Button></DialogActions>
+        <Button className="ops-primary" type="submit" disabled={saving} endIcon={<ArrowForwardRounded />}>Create event</Button></DialogActions>
     </form>
   </Dialog>;
 }

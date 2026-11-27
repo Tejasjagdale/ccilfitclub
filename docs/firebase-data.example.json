@@ -1,0 +1,76 @@
+{
+  "settings/admin": {
+    "uid": "ADMIN_BROWSER_UID"
+  },
+  "core/directory": {
+    "u": {
+      "u-admin": [
+        "Club",
+        "Admin",
+        "A"
+      ],
+      "u-1": [
+        "Aarav",
+        "Mehta",
+        "A"
+      ]
+    },
+    "a": {
+      "u-1": {
+        "a1": [
+          "HYROX: The Gauntlet",
+          "Engine of the Day",
+          "22 Nov 2026",
+          "hyrox",
+          "Top 10",
+          "Outstanding all-round performance.",
+          "01:08:42"
+        ]
+      }
+    }
+  },
+  "core/employeeIds": {
+    "e": {
+      "u-admin": "ADM007",
+      "u-1": "EMP001"
+    }
+  },
+  "employeeKeys/id-EMP001": {
+    "p": "u-1"
+  },
+  "access/AUTH_BROWSER_UID": {
+    "p": "u-1",
+    "k": "id-EMP001"
+  },
+  "core/events": {
+    "e": {
+      "event-1": {
+        "k": "HYROX",
+        "n": "HYROX",
+        "q": "Q42026",
+        "b": 1795804200000,
+        "d": 1795890600000,
+        "s": "REGISTRATION_OPEN",
+        "c": 0
+      }
+    }
+  },
+  "core/records": {
+    "r": {
+      "record-1": [
+        "HYROX",
+        "u-1",
+        null,
+        "A",
+        "Fastest finish",
+        "01:08:42",
+        "2026-11-22"
+      ]
+    }
+  },
+  "activity/event-1": {
+    "r": {
+      "u-1": "2026-11-28T04:30:00.000Z"
+    }
+  }
+}

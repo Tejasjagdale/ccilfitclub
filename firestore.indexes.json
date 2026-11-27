@@ -1,0 +1,9 @@
+{
+  "indexes": [],
+  "fieldOverrides": [
+    { "collectionGroup": "core", "fieldPath": "*", "indexes": [] },
+    { "collectionGroup": "activity", "fieldPath": "*", "indexes": [] },
+    { "collectionGroup": "employeeKeys", "fieldPath": "*", "indexes": [] },
+    { "collectionGroup": "access", "fieldPath": "*", "indexes": [] }
+  ]
+}

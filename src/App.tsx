@@ -31,6 +31,8 @@ function GuestOnly({ children }: { children: ReactNode }) {
 }
 
 function AppRoutes() {
+  const { loading } = useAppData();
+  if (loading) return <p role="status">Loading OFF·PACE…</p>;
   return <Routes>
     <Route path="/signin" element={<GuestOnly><SignInPage /></GuestOnly>} />
     <Route element={<RequireAthlete />}>

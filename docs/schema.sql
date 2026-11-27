@@ -136,7 +136,7 @@ CREATE TABLE event_records (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   event_id varchar(32) NOT NULL REFERENCES event_categories(id),
   user_id uuid NOT NULL REFERENCES users(id),
-  competition_id uuid NOT NULL REFERENCES competitions(id),
+  competition_id uuid REFERENCES competitions(id),
   record_type record_type NOT NULL,
   metric_key varchar(80) NOT NULL,
   metric_label varchar(120) NOT NULL,
@@ -147,7 +147,8 @@ CREATE TABLE event_records (
   note text,
   verified_by uuid NOT NULL REFERENCES users(id),
   verified_at timestamptz NOT NULL DEFAULT now(),
-  CHECK (value_text IS NOT NULL OR value_numeric IS NOT NULL)
+  CHECK (value_text IS NOT NULL OR value_numeric IS NOT NULL),
+  CHECK (record_type = 'ALL_TIME' OR competition_id IS NOT NULL)
 );
 CREATE UNIQUE INDEX uq_event_all_time_metric ON event_records(event_id, metric_key) WHERE record_type = 'ALL_TIME';
 CREATE INDEX idx_event_records_category ON event_records(event_id, record_type, achieved_at DESC);

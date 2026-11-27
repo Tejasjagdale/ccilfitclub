@@ -15,6 +15,7 @@ import SearchRounded from '@mui/icons-material/SearchRounded';
 import EventSchedule from './EventSchedule';
 import EventControl from './admin/EventControl';
 import UserManagement from './admin/UserManagement';
+import RecordManagement from './admin/RecordManagement';
 import { SportIcon, sportStyle } from '../components/SportIcon';
 import { useAppData } from '../context/AppDataContext';
 import { creatableSports, eventStatus, formatEventDate, statusLabel, type CreatableSport } from '../data/competitionLifecycle';
@@ -39,13 +40,14 @@ function EventStatus({ event, today }: { event: Competition; today: string }) {
 }
 
 export default function AdminPage() {
-  const { currentUser, signOut, users, categories, competitions, registrations, records, today } = useAppData();
+  const { currentUser, signOut, users, categories, competitions, registrations, records, today, firebaseEnabled, importDemo } = useAppData();
   const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
   const [filter, setFilter] = useState<EventFilter>('ALL');
   const [search, setSearch] = useState('');
   const [create, setCreate] = useState<{ sport?: CreatableSport } | null>(null);
   const [notice, setNotice] = useState('');
+  const [importing, setImporting] = useState(false);
   const view: View = params.get('view') === 'users' ? 'users' : params.get('view') === 'records' ? 'records' : 'events';
   const selected = view === 'events' ? competitions.find(c => c.id === params.get('event')) : undefined;
   const currentNav = navigation.find(item => item.id === view)!;
@@ -82,7 +84,7 @@ export default function AdminPage() {
         <div className="ops-account">
           <span className="ops-avatar">{currentUser.firstName[0]}{currentUser.lastName[0]}</span>
           <span className="ops-account-copy"><strong>{currentUser.firstName} {currentUser.lastName}</strong><small>Administrator</small></span>
-          <button type="button" className="ops-icon-button" aria-label="Sign out" title="Sign out" onClick={() => { signOut(); navigate('/signin', { replace: true }); }}><LogoutRounded /></button>
+          <button type="button" className="ops-icon-button" aria-label="Sign out" title="Sign out" onClick={async () => { await signOut(); navigate('/signin', { replace: true }); }}><LogoutRounded /></button>
         </div>
       </div>
     </aside>
@@ -100,6 +102,14 @@ export default function AdminPage() {
               <Button className="ops-primary" startIcon={<AddRounded />} onClick={() => setCreate({})}>Create event</Button>
             </div>
           </section>
+          {firebaseEnabled && !competitions.length && !records.length && users.length === 1 && <section className="ops-panel ops-inset" style={{ marginTop: 16 }}>
+            <div className="ops-panel-heading"><div><h2>Load sample data</h2><p>Start with the demo athletes, competitions, scores, records, and trophies.</p></div></div>
+            <Button className="ops-secondary" disabled={importing} onClick={async () => {
+              setImporting(true);
+              if (await importDemo()) setNotice('Sample data imported.');
+              setImporting(false);
+            }}>Import sample data</Button>
+          </section>}
           <section className="ops-metrics" aria-label="Workspace at a glance">
             {[
               { title: 'Total events', value: competitions.length, icon: CalendarMonthOutlined, color: 'lime' },
@@ -148,14 +158,7 @@ export default function AdminPage() {
         </>}
         {selected && <EventControl key={selected.id} event={selected} onBack={showEvents} notify={setNotice} />}
         {view === 'users' && <UserManagement notify={setNotice} />}
-        {view === 'records' && <>
-          <div className="ops-page-title"><div><h1>Records</h1><p>Verified performances across event editions.</p></div></div>
-          <section className="ops-panel ops-inset">
-            {records.length ? records.map(record => <div className="ops-history-row" key={record.id}>
-              <SportIcon sport={record.eventId} /><div><strong>{record.metric}</strong><small>{users.find(u => u.id === record.userId)?.firstName} {users.find(u => u.id === record.userId)?.lastName} · {formatEventDate(record.achievedAt)}</small></div><b>{record.value}</b>
-            </div>) : <div className="ops-empty"><EmojiEventsOutlined /><strong>No verified records yet</strong><p>Open a completed event to publish a record.</p></div>}
-          </section>
-        </>}
+        {view === 'records' && <RecordManagement notify={setNotice} />}
       </div>
     </main>
     {create && <EventSchedule initialSport={create.sport} onClose={() => setCreate(null)} onCreated={id => {

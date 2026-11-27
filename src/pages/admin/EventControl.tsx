@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Menu, MenuItem, TextField } from '@mui/material';
 import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded';
+import AddRounded from '@mui/icons-material/AddRounded';
 import CalendarMonthOutlined from '@mui/icons-material/CalendarMonthOutlined';
 import CheckRounded from '@mui/icons-material/CheckRounded';
 import GroupsOutlined from '@mui/icons-material/GroupsOutlined';
@@ -9,9 +10,10 @@ import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded';
 import StopRounded from '@mui/icons-material/StopRounded';
 import { useAppData } from '../../context/AppDataContext';
 import { canStart, eventDay, eventStatus, formatEventDate, registrationOpen, statusLabel, validDay } from '../../data/competitionLifecycle';
-import type { Competition, AppUser } from '../../types/domain';
-import { SportIcon, sportStyle } from '../../components/SportIcon';
+import type { Competition } from '../../types/domain';
+import { SportIcon } from '../../components/SportIcon';
 import EventScoring from './EventScoring';
+import RecordDialog from './RecordDialog';
 
 interface Props { event: Competition; onBack: () => void; notify: (message: string) => void }
 
@@ -20,6 +22,7 @@ export default function EventControl({ event, onBack, notify }: Props) {
   const [menu, setMenu] = useState<HTMLElement | null>(null);
   const [confirm, setConfirm] = useState<'end' | 'cancel' | 'delete' | null>(null);
   const [editing, setEditing] = useState(false);
+  const [addingRecord, setAddingRecord] = useState(false);
   const [deadline, setDeadline] = useState(event.registrationDeadline);
   const [error, setError] = useState('');
   const category = categories.find(c => c.id === event.eventId);
@@ -41,21 +44,21 @@ export default function EventControl({ event, onBack, notify }: Props) {
     { title: 'Completed', description: finished && event.endAt ? formatEventDate(event.endAt) : 'Finalize results' },
   ];
 
-  function saveDeadline(e: FormEvent) {
+  async function saveDeadline(e: FormEvent) {
     e.preventDefault();
     if (!validDay(deadline) || deadline < eventDay() || deadline < event.registrationStart) {
       setError('Choose a date on or after today and the registration opening date.');
       return;
     }
-    updateDeadline(event.id, deadline);
+    if (!await updateDeadline(event.id, deadline)) { setError('The deadline could not be changed.'); return; }
     setEditing(false);
     notify('Registration deadline updated.');
   }
 
-  function confirmAction() {
-    if (confirm === 'end') { setCompetitionStatus(event.id, 'COMPLETED'); notify('Event ended. Results are final.'); }
-    if (confirm === 'cancel') { setCompetitionStatus(event.id, 'CANCELLED'); notify('Event cancelled.'); }
-    if (confirm === 'delete') { deleteEdition(event.id); onBack(); notify('Event deleted.'); }
+  async function confirmAction() {
+    if (confirm === 'end' && await setCompetitionStatus(event.id, 'COMPLETED')) notify('Event ended. Results are final.');
+    if (confirm === 'cancel' && await setCompetitionStatus(event.id, 'CANCELLED')) notify('Event cancelled.');
+    if (confirm === 'delete' && await deleteEdition(event.id)) { onBack(); notify('Event deleted.'); }
     setConfirm(null);
   }
 
@@ -68,9 +71,9 @@ export default function EventControl({ event, onBack, notify }: Props) {
         <span className={`ops-badge ops-badge-${status.toLowerCase()}`}><i />{statusLabel[status]}</span>
       </div>
       <div className="ops-event-actions">
-        {canOpen && <Button className="ops-primary" onClick={() => { setCompetitionStatus(event.id, 'REGISTRATION_OPEN'); notify('Registration is open.'); }}>Open registration</Button>}
-        {ready && <Button className="ops-primary" startIcon={<PlayArrowRounded />} onClick={() => {
-          if (canStart(event, eventDay())) { setCompetitionStatus(event.id, 'LIVE'); notify('Event is live.'); }
+        {canOpen && <Button className="ops-primary" onClick={async () => { if (await setCompetitionStatus(event.id, 'REGISTRATION_OPEN')) notify('Registration is open.'); }}>Open registration</Button>}
+        {ready && <Button className="ops-primary" startIcon={<PlayArrowRounded />} onClick={async () => {
+          if (canStart(event, eventDay()) && await setCompetitionStatus(event.id, 'LIVE')) notify('Event is live.');
         }}>Start event</Button>}
         {live && <Button className="ops-primary" startIcon={<StopRounded />} onClick={() => setConfirm('end')}>End event</Button>}
         <button type="button" className="ops-icon-button" aria-label="More event actions" aria-haspopup="menu" aria-expanded={Boolean(menu)} onClick={e => setMenu(e.currentTarget)}><MoreHorizRounded /></button>
@@ -99,9 +102,15 @@ export default function EventControl({ event, onBack, notify }: Props) {
             <span className="ops-avatar">{user.firstName[0]}{user.lastName[0]}</span><span><strong>{user.firstName} {user.lastName}</strong><small>{user.employeeId}</small></span>
           </div>) : <p className="ops-muted">No registrations yet.</p>}
         </section>
-        {finished && <RecordForm event={event} entrants={entrants} notify={notify} />}
+        {finished && <section className="ops-panel ops-inset">
+          <div className="ops-panel-heading"><div><h2>Records</h2><p>Publish a performance from this completed edition.</p></div></div>
+          <Button className="ops-secondary" startIcon={<AddRounded />} onClick={() => setAddingRecord(true)}>Add record</Button>
+        </section>}
       </div>
     </div>
+    {addingRecord && <RecordDialog initialEdition={event} onClose={() => setAddingRecord(false)} onSaved={(_, replaced) => {
+      setAddingRecord(false); notify(replaced ? 'Record replaced.' : 'Record published.');
+    }} />}
     {editing && <Dialog open onClose={() => setEditing(false)} fullWidth maxWidth="xs" PaperProps={{ className: 'ops-dialog' }} aria-labelledby="ops-deadline-title">
       <form onSubmit={saveDeadline}>
         <DialogTitle id="ops-deadline-title">Edit registration deadline</DialogTitle>
@@ -119,37 +128,5 @@ export default function EventControl({ event, onBack, notify }: Props) {
       <DialogActions><Button className="ops-secondary" onClick={() => setConfirm(null)}>Go back</Button>
         <Button className={confirm === 'end' ? 'ops-primary' : 'ops-danger'} onClick={confirmAction}>{confirm === 'end' ? 'End event' : confirm === 'cancel' ? 'Cancel event' : 'Delete event'}</Button></DialogActions>
     </Dialog>}
-    </>
-}
-
-function RecordForm({ event, entrants, notify }: { event: Competition; entrants: AppUser[]; notify: Props['notify'] }) {
-  const { currentUser, users, results, saveRecord } = useAppData();
-  const [holder, setHolder] = useState('');
-  const [metric, setMetric] = useState('');
-  const [value, setValue] = useState('');
-  const [note, setNote] = useState('');
-  const [type, setType] = useState<'ALL_TIME' | 'UNIQUE'>('ALL_TIME');
-  const competingIds = new Set([...entrants.map(u => u.id), ...results.filter(r => r.competitionId === event.id).map(r => r.userId)]);
-  const athletes = users.filter(u => competingIds.has(u.id));
-  if (!athletes.length) return null;
-
-  function submit(e: FormEvent) {
-    e.preventDefault();
-    if (!currentUser || !holder || !metric.trim() || !value.trim()) return;
-    saveRecord({ eventId: event.eventId, competitionId: event.id, userId: holder, recordType: type, metric: metric.trim(), value: value.trim(), achievedAt: event.endAt ? eventDay(new Date(event.endAt)) : eventDay(), note: note.trim(), verifiedBy: currentUser.id });
-    setMetric(''); setValue(''); setNote('');
-    notify('Record published.');
-  }
-
-  return <section className="ops-panel ops-inset">
-    <div className="ops-panel-heading"><div><h2>Verify a record</h2><p>Recognize a standout {sportStyle(event.eventId).format.toLowerCase()} result.</p></div></div>
-    <form onSubmit={submit} className="ops-stacked-form">
-      <TextField select label="Record holder" value={holder} onChange={e => setHolder(e.target.value)} required>{athletes.map(u => <MenuItem key={u.id} value={u.id}>{u.firstName} {u.lastName}</MenuItem>)}</TextField>
-      <TextField select label="Record type" value={type} onChange={e => setType(e.target.value as typeof type)}><MenuItem value="ALL_TIME">All-time record</MenuItem><MenuItem value="UNIQUE">Unique achievement</MenuItem></TextField>
-      <TextField label="Record metric" value={metric} onChange={e => setMetric(e.target.value)} required />
-      <TextField label="Record value" value={value} onChange={e => setValue(e.target.value)} required />
-      <TextField label="Verification note" value={note} onChange={e => setNote(e.target.value)} />
-      <Button className="ops-secondary" type="submit">Publish record</Button>
-    </form>
-  </section>;
+  </>;
 }

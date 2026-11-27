@@ -16,10 +16,11 @@ export default function UserManagement({ notify }: { notify: (message: string) =
   const [person, setPerson] = useState(emptyUser);
   const [removing, setRemoving] = useState<AppUser | null>(null);
   const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
   const roster = users.filter(user => user.status !== 'REMOVED');
   const visible = roster.filter(user => `${user.firstName} ${user.lastName} ${user.employeeId}`.toLowerCase().includes(search.trim().toLowerCase()));
 
-  function submit(e: FormEvent) {
+  async function submit(e: FormEvent) {
     e.preventDefault();
     const employeeId = person.employeeId.trim().toUpperCase();
     if (!person.firstName.trim() || !person.lastName.trim() || !employeeId) {
@@ -27,7 +28,10 @@ export default function UserManagement({ notify }: { notify: (message: string) =
       return;
     }
     if (roster.some(user => user.employeeId.trim().toUpperCase() === employeeId)) { setError('That employee ID is already in use.'); return; }
-    addUser(person);
+    setSaving(true);
+    const saved = await addUser(person);
+    setSaving(false);
+    if (!saved) { setError('The employee could not be added. Check the employee ID and try again.'); return; }
     setSearch('');
     setCreating(false);
     notify('Employee added.');
@@ -62,14 +66,17 @@ export default function UserManagement({ notify }: { notify: (message: string) =
           <TextField fullWidth label="Last name" required inputProps={{ maxLength: 64 }} value={person.lastName} onChange={e => setPerson({ ...person, lastName: e.target.value })} />
           <TextField fullWidth label="Employee ID" required inputProps={{ maxLength: 32 }} value={person.employeeId} onChange={e => setPerson({ ...person, employeeId: e.target.value.toUpperCase() })} helperText="The employee uses this ID to sign in." />
         </DialogContent>
-        <DialogActions><Button className="ops-secondary" onClick={() => setCreating(false)}>Cancel</Button><Button type="submit" className="ops-primary">Add user</Button></DialogActions>
+        <DialogActions><Button className="ops-secondary" onClick={() => setCreating(false)}>Cancel</Button><Button type="submit" className="ops-primary" disabled={saving}>Add user</Button></DialogActions>
       </form>
     </Dialog>}
     {removing && <Dialog open onClose={() => setRemoving(null)} fullWidth maxWidth="xs" PaperProps={{ className: 'ops-dialog' }} aria-labelledby="ops-remove-user-title">
       <DialogTitle id="ops-remove-user-title">Remove user?</DialogTitle>
       <DialogContent><DialogContentText>{removing.firstName} {removing.lastName} will lose sign-in access and be withdrawn from upcoming events. Live and completed event history will be retained.</DialogContentText></DialogContent>
-      <DialogActions><Button className="ops-secondary" onClick={() => setRemoving(null)}>Cancel</Button><Button className="ops-danger" onClick={() => {
-        removeUser(removing.id); setRemoving(null); notify('Employee removed.');
+      <DialogActions><Button className="ops-secondary" onClick={() => setRemoving(null)}>Cancel</Button><Button className="ops-danger" disabled={saving} onClick={async () => {
+        setSaving(true);
+        const saved = await removeUser(removing.id);
+        setSaving(false);
+        if (saved) { setRemoving(null); notify('Employee removed.'); }
       }}>Remove user</Button></DialogActions>
     </Dialog>}
   </>;

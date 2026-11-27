@@ -107,8 +107,6 @@
 .ath-page-title { font-size: clamp(32px, 5vw, 52px); }
 .ath-profile { max-width: 1080px; margin: 0 auto; }
 .ath-profile-title { margin: 3px 0 20px; }
-.ath-cabinet .trophy-cabinet { box-shadow: 0 14px 35px #2c302422; }
-.ath-cabinet .trophy-cabinet__stage { max-height: none; }
 .ath-profile-registrations { margin-top: 18px; }
 .ath-profile-registrations ul { margin: 0; padding: 0; list-style: none; }
 .ath-profile-registrations li { border-top: 1px solid #edf0ea; }

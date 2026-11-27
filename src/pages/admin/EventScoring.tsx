@@ -23,6 +23,7 @@ export default function EventScoring({ event, category, entrants, notify }: Prop
   const [opponentScore, setOpponentScore] = useState('');
   const [round, setRound] = useState('FINAL');
   const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
   const [editingMatch, setEditingMatch] = useState<KnockoutMatch | null>(null);
   const live = event.status === 'LIVE';
   const complete = event.status === 'COMPLETED';
@@ -36,16 +37,19 @@ export default function EventScoring({ event, category, entrants, notify }: Prop
   const closedMessage = event.status === 'CANCELLED' ? 'This event was cancelled.' :
     complete ? 'Results for this event are final.' : 'Scoring opens when you start the event.';
 
-  function submit(e: FormEvent) {
+  async function submit(e: FormEvent) {
     e.preventDefault();
-    if (!canScore) return;
+    if (!canScore || saving) return;
     if (knockout) {
       const match = { competitionId: event.id, stage: round, winnerId: winner, opponentId: opponent,
         winnerScore: winnerScore.trim() ? Number(winnerScore) : Number.NaN,
         opponentScore: opponentScore.trim() ? Number(opponentScore) : Number.NaN };
       const message = validateMatch(match, eventMatches, event.eventId);
       if (message) { setError(message); return; }
-      saveMatch(match);
+      setSaving(true);
+      const saved = await saveMatch(match);
+      setSaving(false);
+      if (!saved) { setError('The match could not be saved.'); return; }
       resetMatch();
       notify('Match result saved.');
     } else {
@@ -54,7 +58,10 @@ export default function EventScoring({ event, category, entrants, notify }: Prop
         setError('Select an athlete and enter a valid result.');
         return;
       }
-      saveResult({ competitionId: event.id, userId: athlete, score: performance, detail: notes, rank: timed ? undefined : Number(rank) });
+      setSaving(true);
+      const saved = await saveResult({ competitionId: event.id, userId: athlete, score: performance, detail: notes, rank: timed ? undefined : Number(rank) });
+      setSaving(false);
+      if (!saved) { setError('The performance could not be saved.'); return; }
       setAthlete(''); setPerformance(''); setNotes('');
       notify('Performance saved.');
     }
@@ -104,7 +111,7 @@ export default function EventScoring({ event, category, entrants, notify }: Prop
         {!timed && <TextField label="Position" type="number" value={rank} onChange={e => setRank(e.target.value)} required inputProps={{ min: 1 }} />}
         <TextField className="ops-span-two" label="Result notes (optional)" value={notes} onChange={e => setNotes(e.target.value)} />
       </>}
-      <div className="ops-span-two ops-form-actions"><Button type="submit" className="ops-primary" startIcon={<SaveOutlined />}>{editingMatch ? 'Save correction' : knockout ? 'Save match' : 'Save performance'}</Button>
+      <div className="ops-span-two ops-form-actions"><Button type="submit" className="ops-primary" disabled={saving} startIcon={<SaveOutlined />}>{editingMatch ? 'Save correction' : knockout ? 'Save match' : 'Save performance'}</Button>
         {editingMatch && <Button className="ops-secondary" onClick={resetMatch}>Cancel correction</Button>}
       </div>
     </form> : (!eventResults.length || !complete) && <div className="ops-empty ops-score-empty">

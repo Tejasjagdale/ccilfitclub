@@ -29,6 +29,13 @@ export interface KnockoutMatch {
   winnerScore: number; opponentScore: number;
 }
 export interface EventRecord {
-  id: string; eventId: string; userId: string; competitionId: string; recordType: 'ALL_TIME' | 'UNIQUE';
+  id: string; eventId: string; userId: string; competitionId?: string; recordType: 'ALL_TIME' | 'UNIQUE';
   metric: string; value: string; achievedAt: string; note: string; verifiedBy: string;
+}
+
+export type RecordEntry = Omit<EventRecord, 'id' | 'verifiedBy'>;
+
+export interface CabinetAward {
+  id: string; event: string; title: string; date: string; type: 'hyrox' | 'chess' | 'run';
+  placement: string; detail: string; finish?: string;
 }

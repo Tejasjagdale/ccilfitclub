@@ -1,44 +1,51 @@
 import { useState, type FormEvent } from 'react';
-import { Alert, Box, Button, Chip, MenuItem, Paper, TextField, Typography } from '@mui/material';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField } from '@mui/material';
+import CloseRounded from '@mui/icons-material/CloseRounded';
+import ArrowForwardRounded from '@mui/icons-material/ArrowForwardRounded';
 import { useAppData } from '../context/AppDataContext';
-import type { EventFormat } from '../types/domain';
+import { creatableSports, type CreatableSport } from '../data/competitionLifecycle';
+import { SportIcon, sportStyle } from '../components/SportIcon';
 
-import { dateAfter } from '../data/dateAfter';
+interface Props { initialSport?: CreatableSport; onClose: () => void; onCreated: (id: string) => void }
 
-export default function EventSchedule({ onCreated }: { onCreated: (id: string) => void }) {
-  const { categories, createEdition } = useAppData();
-  const [sport, setSport] = useState(categories[0].id);
-  const [format, setFormat] = useState<EventFormat>('TIMED');
+export default function EventSchedule({ initialSport, onClose, onCreated }: Props) {
+  const { categories, createCompetition, today } = useAppData();
+  const [sport, setSport] = useState<CreatableSport | ''>(initialSport ?? '');
+  const [deadline, setDeadline] = useState('');
   const [error, setError] = useState('');
-  const template = categories.find(category => category.id === sport);
-  function submit(event: FormEvent<HTMLFormElement>) {
+
+  function submit(event: FormEvent) {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const field = (key: string) => String(data.get(key) ?? '').trim();
-    const startAt = field('start'), endAt = field('end');
-    const registrationStart = field('open'), registrationDeadline = field('close');
-    if (registrationStart > registrationDeadline || registrationDeadline > startAt.slice(0,10) || endAt <= startAt) {
-      setError('Check the dates. Registration must close by the event date and the finish must follow the start.'); return;
-    }
-    const name = field('name'), venue = field('venue'), sportName = field('sportName');
-    if (!name || !venue || (!template && !sportName)) { setError('Enter an edition name, venue and discipline.'); return; }
-    if (!template && categories.some(c => c.name.toLowerCase() === sportName.toLowerCase())) { setError('Select the existing discipline to keep its records together.'); return; }
-    const eventId = template?.id ?? crypto.randomUUID();
-    const id = crypto.randomUUID();
-    createEdition({ id, eventId, name, venue, description: field('description'), startAt, endAt, registrationStart, registrationDeadline,
-      year: Number(startAt.slice(0,4)), quarter: 'Q' + Math.ceil(Number(startAt.slice(5,7))/3), status: 'DRAFT', capacity: Number(field('capacity')) },
-      template ? undefined : { id: eventId, name: sportName, format, scoreLabel: field('metric') || 'Score', unit: format === 'TIMED' ? 'time' : 'points', icon: '◎', description: sportName });
+    if (!sport) { setError('Select an event type.'); return; }
+    const id = createCompetition(sport, deadline);
+    if (!id) { setError('Choose a registration deadline of today or later.'); return; }
     onCreated(id);
   }
-  return <Paper className="admin-form-card" elevation={0}><Typography variant="h5" mb={3}>Create an edition</Typography>
-    <Box component="form" onSubmit={submit} className="admin-form-grid">
-      <TextField select label="Discipline" value={sport} onChange={e=>setSport(e.target.value)}>{categories.map(c=><MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>)}<MenuItem value="new">+ New discipline</MenuItem></TextField>
-      {template && <Box sx={{alignSelf:'center'}}><Chip label={template.scoreLabel + ' · ' + template.format} /></Box>}
-      {!template && <><TextField required name="sportName" label="Discipline name"/><TextField select label="Scoring format" value={format} onChange={e=>setFormat(e.target.value as EventFormat)}>{['TIMED','DISTANCE','POINTS','KNOCKOUT'].map(f=><MenuItem key={f} value={f}>{f}</MenuItem>)}</TextField><TextField name="metric" label="Score label" required placeholder="e.g. Distance in km"/></>}
-      <TextField name="name" required label="Edition name" placeholder="e.g. Winter 5K"/><TextField name="venue" required label="Venue"/>
-      <TextField name="start" required label="Starts" type="datetime-local" defaultValue={dateAfter(8)+'T09:00'}/><TextField name="end" required label="Ends" type="datetime-local" defaultValue={dateAfter(8)+'T12:00'}/>
-      <TextField name="open" required label="Registration opens" type="date" defaultValue={dateAfter(0)}/><TextField name="close" required label="Registration closes" type="date" defaultValue={dateAfter(7)}/>
-      <TextField name="capacity" required label="Participant limit" type="number" inputProps={{min:1,step:1}} defaultValue={32}/><TextField name="description" label="Event details" multiline/>
-      {error && <Alert severity="error" className="span-two">{error}</Alert>}<Box className="span-two"><Button type="submit" variant="contained">Create draft</Button></Box>
-    </Box></Paper>;
+
+  return <Dialog open onClose={onClose} fullWidth maxWidth="sm" PaperProps={{ className: 'ops-dialog' }} aria-labelledby="ops-create-event-title">
+    <form onSubmit={submit}>
+      <DialogTitle id="ops-create-event-title">Create event</DialogTitle>
+      <IconButton className="ops-dialog-close" onClick={onClose} aria-label="Close"><CloseRounded /></IconButton>
+      <DialogContent>
+        {error && <Alert severity="error" className="ops-form-alert">{error}</Alert>}
+        <fieldset className="ops-sport-fieldset">
+          <legend>Event type</legend>
+          <div className="ops-sport-options">
+            {creatableSports.map(id => <label className="ops-sport-option" key={id}>
+              <input type="radio" name="sport" value={id} checked={sport === id} onChange={() => { setSport(id); setError(''); }} />
+              <span className="ops-sport-option-body">
+                <SportIcon sport={id} />
+                <span><strong>{categories.find(c => c.id === id)?.name}</strong><small>{sportStyle(id).format}</small></span>
+              </span>
+            </label>)}
+          </div>
+        </fieldset>
+        <TextField fullWidth label="Registration deadline" type="date" required InputLabelProps={{ shrink: true }}
+          inputProps={{ min: today }} value={deadline} onChange={e => { setDeadline(e.target.value); setError(''); }}
+          helperText="Registration opens immediately and closes at the end of this date (IST)." />
+      </DialogContent>
+      <DialogActions><Button className="ops-secondary" onClick={onClose}>Cancel</Button>
+        <Button className="ops-primary" type="submit" endIcon={<ArrowForwardRounded />}>Create event</Button></DialogActions>
+    </form>
+  </Dialog>;
 }

@@ -1,0 +1,6 @@
+.pace-sport-icon { display: inline-grid; flex: 0 0 auto; place-items: center; width: 38px; height: 38px; border-radius: 10px; font-size: 19px; background: var(--pace-tone-bg); color: var(--pace-tone-ink); }
+.pace-tone-lime { --pace-tone-bg: #edf3d8; --pace-tone-ink: #4c6525; }
+.pace-tone-peach { --pace-tone-bg: #faece3; --pace-tone-ink: #925934; }
+.pace-tone-blue { --pace-tone-bg: #e6f0ef; --pace-tone-ink: #3d6b68; }
+.pace-tone-violet { --pace-tone-bg: #f0eaf8; --pace-tone-ink: #725787; }
+.pace-chess-mark { font-family: 'Segoe UI Symbol', serif; font-size: 1.13em; line-height: 1; }

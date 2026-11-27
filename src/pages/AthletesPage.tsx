@@ -2,20 +2,18 @@ import { useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Avatar, Box, Chip, Paper, TextField, Typography } from '@mui/material';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import Layout from '../components/Layout';
 import { useAppData } from '../context/AppDataContext';
 
 export default function AthletesPage() {
   const { users } = useAppData();
-  const people = users.filter((person) => person.role === 'ATHLETE');
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('ALL');
-  const filtered = useMemo(() => people.filter((person) =>
-    (status === 'ALL' || person.status === status) &&
+  const filtered = useMemo(() => users.filter((person) =>
+    person.role === 'ATHLETE' && person.status !== 'REMOVED' && (status === 'ALL' || person.status === status) &&
     `${person.firstName} ${person.lastName} ${person.employeeId} ${person.team}`.toLowerCase().includes(search.toLowerCase())
-  ), [search, status]);
+  ), [users, search, status]);
   return (
-    <Layout>
+    <>
       <Box className="page-heading">
         <Typography className="overline">THE PEOPLE</Typography>
         <Typography variant="h1">Athletes</Typography>
@@ -29,7 +27,7 @@ export default function AthletesPage() {
       </Box>
       <Paper className="athlete-table" elevation={0}>
         <Box className="athlete-table-head"><span>EMPLOYEE</span><span>TEAM</span><span>STATUS</span><span /></Box>
-        {filtered.map((person, index) => <Box className="athlete-row" component={RouterLink} to={`/athletes/${person.employeeId}`} key={person.employeeId}>
+        {filtered.map((person, index) => <Box className="athlete-row" component={RouterLink} to={`/athletes/${encodeURIComponent(person.employeeId)}`} key={person.employeeId}>
           <Box className="athlete-name-cell">
             <Avatar className={`athlete-avatar tone-${index % 5}`}>{person.firstName[0]}{person.lastName[0]}</Avatar>
             <Box><b>{person.firstName} {person.lastName}</b><small>{person.employeeId}</small></Box>
@@ -40,6 +38,6 @@ export default function AthletesPage() {
         </Box>)}
         {filtered.length === 0 && <Box className="no-results">No athletes match your search.</Box>}
       </Paper>
-    </Layout>
+    </>
   );
 }

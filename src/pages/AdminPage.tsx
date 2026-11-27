@@ -1,91 +1,166 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
-import { Box, Button, Chip, MenuItem, Paper, TextField, Typography } from '@mui/material';
-import AddRoundedIcon from '@mui/icons-material/AddRounded';
-import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
-import SaveRoundedIcon from '@mui/icons-material/SaveRounded';
+import { useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Button, InputAdornment, Snackbar, TextField } from '@mui/material';
+import AddRounded from '@mui/icons-material/AddRounded';
+import ArrowForwardRounded from '@mui/icons-material/ArrowForwardRounded';
+import BoltRounded from '@mui/icons-material/BoltRounded';
+import CalendarMonthOutlined from '@mui/icons-material/CalendarMonthOutlined';
+import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded';
+import EmojiEventsOutlined from '@mui/icons-material/EmojiEventsOutlined';
+import EventAvailableOutlined from '@mui/icons-material/EventAvailableOutlined';
+import GroupsOutlined from '@mui/icons-material/GroupsOutlined';
+import LogoutRounded from '@mui/icons-material/LogoutRounded';
+import SensorsRounded from '@mui/icons-material/SensorsRounded';
+import SearchRounded from '@mui/icons-material/SearchRounded';
 import EventSchedule from './EventSchedule';
-import Layout from '../components/Layout';
+import EventControl from './admin/EventControl';
+import UserManagement from './admin/UserManagement';
+import { SportIcon, sportStyle } from '../components/SportIcon';
 import { useAppData } from '../context/AppDataContext';
-import type { UserRole, UserStatus } from '../types/domain';
+import { creatableSports, eventStatus, formatEventDate, statusLabel, type CreatableSport } from '../data/competitionLifecycle';
+import type { Competition } from '../types/domain';
+import './admin/admin.css';
+
+type View = 'events' | 'users' | 'records';
+type EventFilter = 'ALL' | 'LIVE' | 'READY' | 'REGISTRATION_OPEN' | 'COMPLETED';
+const filters: [EventFilter, string][] = [
+  ['ALL', 'All events'], ['LIVE', 'Live'], ['READY', 'Ready to start'],
+  ['REGISTRATION_OPEN', 'Registration open'], ['COMPLETED', 'Completed'],
+];
+const navigation = [
+  { id: 'events', title: 'Events', icon: CalendarMonthOutlined, href: '/admin' },
+  { id: 'users', title: 'User management', icon: GroupsOutlined, href: '/admin?view=users' },
+  { id: 'records', title: 'Records', icon: EmojiEventsOutlined, href: '/admin?view=records' },
+];
+
+function EventStatus({ event, today }: { event: Competition; today: string }) {
+  const status = eventStatus(event, today);
+  return <span className={`ops-badge ops-badge-${status.toLowerCase()}`}><i />{statusLabel[status]}</span>;
+}
 
 export default function AdminPage() {
-  const { currentUser, users, categories, competitions, registrations, results, records, deleteEdition, updateCompetition, setCompetitionStatus, saveResult, saveRecord, addUser, updateUser } = useAppData();
-  const [view, setView] = useState('Create edition');
-  const [filter, setFilter] = useState('');
-  function manage(id: string) { setSelectedCompetition(id); setView('Manage'); }
-  const [selectedCompetition, setSelectedCompetition] = useState(competitions.find(c => c.status === 'LIVE')?.id ?? competitions[0]?.id ?? '');
-  const [selectedDeadline, setSelectedDeadline] = useState(competitions.find(c => c.id === (competitions.find(x => x.status === 'LIVE')?.id ?? competitions[0]?.id))?.registrationDeadline ?? '');
-  const [resultUser, setResultUser] = useState(users.find(u => u.role === 'ATHLETE')?.id ?? ''); const [opponentUser, setOpponentUser] = useState(users.filter(u => u.role === 'ATHLETE')[1]?.id ?? ''); const [winnerUser, setWinnerUser] = useState(users.find(u => u.role === 'ATHLETE')?.id ?? ''); const [stage, setStage] = useState('FINAL'); const [rank, setRank] = useState('1'); const [score, setScore] = useState(''); const [scoreLabel, setScoreLabel] = useState('Finish time'); const [detail, setDetail] = useState('');
-  const [recordMetric, setRecordMetric] = useState(''); const [recordValue, setRecordValue] = useState(''); const [recordNote, setRecordNote] = useState(''); const [recordType, setRecordType] = useState<'ALL_TIME'|'UNIQUE'>('ALL_TIME');
-  const [userError, setUserError] = useState('');
-  const [firstName, setFirstName] = useState(''); const [lastName, setLastName] = useState(''); const [employeeId, setEmployeeId] = useState(''); const [role, setRole] = useState<UserRole>('ATHLETE'); const [userStatus, setUserStatus] = useState<UserStatus>('ACTIVE'); const [department, setDepartment] = useState(''); const [team, setTeam] = useState('');
-  const selected = competitions.find(c => c.id === selectedCompetition); const category = categories.find(c => c.id === selected?.eventId);
-  const competitionResults = useMemo(() => results.filter(r => r.competitionId === selectedCompetition).sort((a,b) => a.rank - b.rank), [results, selectedCompetition]);
-  const eligibleAthletes = users.filter(u => u.role === 'ATHLETE' && u.status === 'ACTIVE' && registrations.some(r => r.competitionId === selectedCompetition && r.userId === u.id && r.status === 'REGISTERED'));
-  useEffect(() => { if (category) setScoreLabel(category.scoreLabel); }, [category?.id]);
-  useEffect(() => { if (selected) setSelectedDeadline(selected.registrationDeadline); }, [selected?.id, selected?.registrationDeadline]);
-  useEffect(() => { const entrants = users.filter(u => u.role === 'ATHLETE' && u.status === 'ACTIVE' && registrations.some(r => r.competitionId === selectedCompetition && r.userId === u.id && r.status === 'REGISTERED')); if (entrants.length) { if (!entrants.some(u => u.id === resultUser)) { setResultUser(entrants[0].id); setWinnerUser(entrants[0].id); } if (!entrants.some(u => u.id === opponentUser) || opponentUser === resultUser) setOpponentUser(entrants.find(u => u.id !== (entrants.some(x => x.id === resultUser) ? resultUser : entrants[0].id))?.id ?? ''); } else { setResultUser(''); setOpponentUser(''); setWinnerUser(''); } }, [selectedCompetition, registrations, users]);
-  const publishResult = (e: FormEvent) => { e.preventDefault(); if (!selected || selected.status !== 'LIVE' || !resultUser || !score || !eligibleAthletes.some(u => u.id === resultUser)) return; const finalStatus = 'PENDING' as const; if (category?.format === 'KNOCKOUT' && opponentUser && opponentUser !== resultUser && eligibleAthletes.some(u => u.id === opponentUser)) { const winner = winnerUser === resultUser ? resultUser : opponentUser; const loser = winner === resultUser ? opponentUser : resultUser; const normalizedScore = score.replace('-', '–'); const [scoreA, scoreB = '0'] = normalizedScore.split('–'); const winnerScore = winner === resultUser ? scoreA : scoreB; const loserScore = winner === resultUser ? scoreB : scoreA; saveResult({ competitionId: selected.id, userId: winner, stage, rank: 1, score: `${winnerScore}–${loserScore}`, scoreLabel, detail: detail || `Won against ${users.find(u => u.id === loser)?.firstName ?? 'opponent'}.`, status: finalStatus }); saveResult({ competitionId: selected.id, userId: loser, stage, rank: 2, score: `${loserScore}–${winnerScore}`, scoreLabel, detail: `Lost to ${users.find(u => u.id === winner)?.firstName ?? 'opponent'}.`, status: finalStatus }); } else { saveResult({ competitionId: selected.id, userId: resultUser, stage, rank: Number(rank), score, scoreLabel, detail, status: finalStatus }); } setScore(''); setDetail(''); };
-  const publishRecord = (e: FormEvent) => { e.preventDefault(); if (!selected || selected.status !== 'COMPLETED' || !currentUser || currentUser.role !== 'ADMIN' || !recordMetric || !recordValue) return; saveRecord({ eventId: selected.eventId, userId: resultUser, competitionId: selected.id, recordType, metric: recordMetric, value: recordValue, achievedAt: selected.endAt.slice(0,10), note: recordNote, verifiedBy: currentUser.id }); setRecordMetric(''); setRecordValue(''); setRecordNote(''); };
-  const saveDeadline = () => { if (!selected) return; if (selectedDeadline < selected.registrationStart || selectedDeadline > selected.startAt.slice(0,10)) { window.alert('Registration deadline must be between registration opening and competition date.'); return; } updateCompetition(selected.id, { registrationDeadline: selectedDeadline }); };
-  const createUser = (e: FormEvent) => { e.preventDefault(); if (!firstName.trim() || !lastName.trim() || !employeeId.trim()) return; if (users.some(u => u.employeeId.toLowerCase() === employeeId.trim().toLowerCase())) { setUserError('Employee ID already exists.'); return; } addUser({ firstName, lastName, employeeId: employeeId.trim().toUpperCase(), role, status: userStatus, department, team }); setUserError(''); setFirstName(''); setLastName(''); setEmployeeId(''); };
-  if (!currentUser || currentUser.role !== 'ADMIN' || currentUser.status !== 'ACTIVE') return null;
-  return <Layout>
-    <Box className="page-heading admin-page-heading"><Typography className="overline">CONTROL ROOM · ADMINISTRATOR</Typography><Typography variant="h1">Event management</Typography><Typography color="text.secondary">Create competitions, open registrations, run live scoring and verify records.</Typography></Box>
-    <Box className="admin-stats"><Paper elevation={0}><b>{competitions.length}</b><span>Total competitions</span></Paper><Paper elevation={0}><b>{competitions.filter(c => c.status === 'LIVE').length}</b><span>Live competitions</span></Paper><Paper elevation={0}><b>{registrations.filter(r => r.status === 'REGISTERED').length}</b><span>Active registrations</span></Paper><Paper elevation={0}><b>{users.length}</b><span>Users</span></Paper></Box>
-    <Box className="board-nav">{['Editions','Create edition','Manage','Records','People'].map(item => <Button key={item} aria-pressed={view === item} onClick={() => setView(item)} variant={view === item ? 'contained' : 'text'}>{item}</Button>)}</Box>
-    {view === 'Create edition' && <EventSchedule onCreated={manage}/>}
-    {view === 'Editions' && <Paper className="admin-form-card" elevation={0}><Box className="edition-heading"><Typography variant="h5">Event editions</Typography><TextField size="small" label="Find an edition" value={filter} onChange={e=>setFilter(e.target.value)}/></Box>
-    {competitions.filter(c=>c.name.toLowerCase().includes(filter.toLowerCase())).sort((a,b)=>b.startAt.localeCompare(a.startAt)).map(c=><button className="edition-row" key={c.id} onClick={()=>manage(c.id)}><span className="edition-date">{new Date(c.startAt).toLocaleDateString(undefined,{month:'short'})}<b>{new Date(c.startAt).getDate()}</b></span><span className="edition-name"><strong>{c.name}</strong><small>{c.venue} · {c.year}</small></span><Chip size="small" label={c.status.replace(/_/g,' ').toLowerCase()}/></button>)}
-    {!competitions.some(c=>c.name.toLowerCase().includes(filter.toLowerCase())) && <Typography>No matching editions.</Typography>}</Paper>}
-    {view === 'Records' && <Paper className="admin-form-card" elevation={0}><Typography variant="h5">All-time records</Typography>{categories.map(c=><Box key={c.id} sx={{mt:3}}><Typography fontWeight={750}>{c.name}</Typography>{records.filter(r=>r.eventId===c.id && r.recordType==='ALL_TIME').map(r=><Box key={r.id} className="edition-row"><span className="edition-name"><strong>{r.metric}</strong><small>{users.find(u=>u.id===r.userId)?.firstName} {users.find(u=>u.id===r.userId)?.lastName} · {competitions.find(e=>e.id===r.competitionId)?.name}</small></span><b>{r.value}</b></Box>)}{!records.some(r=>r.eventId===c.id && r.recordType==='ALL_TIME') && <Typography color="text.secondary" variant="body2">No verified record yet.</Typography>}</Box>)}</Paper>}
-    {view === 'Manage' && <Box className="admin-section"><Box className="admin-section-title"><Box><Typography className="overline">02 · RUN THE EVENT</Typography><Typography variant="h2">Competition control</Typography></Box></Box>
-      <Paper className="admin-form-card" elevation={0}><Box className="admin-control-top"><TextField select fullWidth label="Select competition" value={selectedCompetition} onChange={e => setSelectedCompetition(e.target.value)}>{competitions.map(c => <MenuItem key={c.id} value={c.id}>{c.name} · {c.status}</MenuItem>)}</TextField>{selected && <Chip label={selected.status} className={selected.status === 'LIVE' ? 'live-chip' : 'quiet-chip'}/>}</Box>
-        {selected && <><Box className="competition-admin-meta"><span>{category?.name} · {selected.quarter} {selected.year}</span><span>{registrations.filter(r => r.competitionId === selected.id && r.status === 'REGISTERED').length}/{selected.capacity} registered</span><span>Starts: {new Date(selected.startAt).toLocaleString()}</span></Box>
-          {['DRAFT','REGISTRATION_OPEN','UPCOMING'].includes(selected.status) && <Box className="admin-deadline-editor"><TextField label="Last date for registration" type="date" size="small" InputLabelProps={{ shrink: true }} value={selectedDeadline} onChange={e => setSelectedDeadline(e.target.value)} /><Button variant="outlined" onClick={saveDeadline}>Save deadline</Button></Box>}
-          <Box className="status-actions">
-            <Button color="error" onClick={() => {
-              if (!window.confirm(`Delete ${selected.name} and its registrations, scores and records? This cannot be undone.`)) return;
-              deleteEdition(selected.id);
-              setSelectedCompetition(competitions.find(c => c.id !== selected.id)?.id ?? '');
-              setView('Editions');
-            }}>Delete edition</Button>
-            {selected.status === 'DRAFT' && <Button onClick={() => setCompetitionStatus(selected.id, 'REGISTRATION_OPEN')} variant="contained">Open registration</Button>}
-            {['DRAFT','REGISTRATION_OPEN'].includes(selected.status) && <Button onClick={() => setCompetitionStatus(selected.id, 'UPCOMING')} variant="outlined">Mark upcoming</Button>}
-            {['REGISTRATION_OPEN','UPCOMING'].includes(selected.status) && <Button onClick={() => setCompetitionStatus(selected.id, 'LIVE')} variant="contained" color="success" startIcon={<PlayArrowRoundedIcon/>}>Start event</Button>}
-            {selected.status === 'LIVE' && <Button onClick={() => setCompetitionStatus(selected.id, 'COMPLETED')} variant="contained">End event</Button>}
-            {!['COMPLETED','CANCELLED'].includes(selected.status) && <Button onClick={() => setCompetitionStatus(selected.id, 'CANCELLED')} variant="outlined" color="error">Cancel event</Button>}
-          </Box>
-          <Typography className="admin-help">Open registration to allow eligible active athletes to opt in. Start event when the competition begins. Score entry is enabled only while the event is live.</Typography>
-          <Box className="admin-subsection-title"><Typography variant="h5">Update scores & standings</Typography><Typography>Format: {category?.format} · {category?.scoreLabel}</Typography></Box>
-          {selected.status === 'LIVE' ? <>{eligibleAthletes.length === 0 && <Typography color="text.secondary" fontSize={12}>No active athletes have registered for this competition yet.</Typography>}
-          <Box component="form" onSubmit={publishResult} className="admin-form-grid score-form">
-            <TextField select label={category?.format === 'KNOCKOUT' ? 'Player / athlete A' : 'Athlete'} value={resultUser} onChange={e => { setResultUser(e.target.value); setWinnerUser(e.target.value); if (opponentUser === e.target.value) setOpponentUser(eligibleAthletes.find(u => u.id !== e.target.value)?.id ?? ''); }} >{eligibleAthletes.map(u => <MenuItem key={u.id} value={u.id}>{u.firstName} {u.lastName} · {u.employeeId}</MenuItem>)}</TextField>
-            {category?.format === 'KNOCKOUT' && <TextField select label="Player / athlete B" value={opponentUser} onChange={e => { setOpponentUser(e.target.value); if (winnerUser !== resultUser && winnerUser !== e.target.value) setWinnerUser(resultUser); }}>{eligibleAthletes.filter(u => u.id !== resultUser).map(u => <MenuItem key={u.id} value={u.id}>{u.firstName} {u.lastName} · {u.employeeId}</MenuItem>)}</TextField>}
-            <TextField label="Stage / round" value={stage} onChange={e => setStage(e.target.value)} placeholder="ROUND OF 16 / SEMI FINAL / FINAL" />
-            {category?.format === 'KNOCKOUT' ? <TextField select label="Match winner" value={winnerUser} onChange={e => setWinnerUser(e.target.value)}><MenuItem value={resultUser}>{users.find(u => u.id === resultUser)?.firstName} {users.find(u => u.id === resultUser)?.lastName}</MenuItem><MenuItem value={opponentUser}>{users.find(u => u.id === opponentUser)?.firstName} {users.find(u => u.id === opponentUser)?.lastName}</MenuItem></TextField> : <TextField label="Position / rank" type="number" value={rank} onChange={e => setRank(e.target.value)} />}
-            <TextField type={category?.format === 'POINTS' || (category?.format === 'DISTANCE' && category.unit !== 'time') ? 'number' : 'text'} inputProps={{step:'any',min:0,pattern: category?.format === 'KNOCKOUT' ? '[0-9]+[–\\-][0-9]+' : category?.unit === 'time' ? '[0-9]+:[0-5][0-9]:[0-5][0-9]' : undefined}} label={category?.format === 'TIMED' || category?.format === 'DISTANCE' ? category.scoreLabel : category?.format === 'KNOCKOUT' ? 'Match score (A–B)' : 'Score'} value={score} onChange={e => setScore(e.target.value)} required placeholder={category?.unit === 'time' ? 'hh:mm:ss' : category?.format === 'KNOCKOUT' ? '3–1' : '0'} />
-            <TextField label="Score label" value={scoreLabel} onChange={e => setScoreLabel(e.target.value)} />
-            <TextField label="Result notes" value={detail} onChange={e => setDetail(e.target.value)} />
-            <Box className="span-two form-actions"><Button type="submit" variant="contained" startIcon={<SaveRoundedIcon/>} disabled={eligibleAthletes.length < (category?.format === 'KNOCKOUT' ? 2 : 1)}>Save live result</Button><Typography>Updates are reflected on the public event page immediately in this demo.</Typography></Box>
-          </Box></> : <Typography className="admin-help">Start this competition to enable live score entry. Previous results remain visible below.</Typography>}
-          {competitionResults.length > 0 && <Box className="admin-result-list">{competitionResults.map(r => <Box key={r.id}><b>#{r.rank} · {users.find(u => u.id === r.userId)?.firstName} {users.find(u => u.id === r.userId)?.lastName}</b><span>{r.stage} · {r.scoreLabel}: {r.score}</span></Box>)}</Box>}
-          <Box className="admin-subsection-title"><Typography variant="h5">Verify a record</Typography><Typography>Record belongs to the event category, not just one quarter.</Typography></Box>
-          {selected.status === 'COMPLETED' && <Box component="form" onSubmit={publishRecord} className="admin-form-grid score-form">
-            <TextField select label="Record holder" value={resultUser} onChange={e => setResultUser(e.target.value)}>{users.filter(u => u.role === 'ATHLETE').map(u => <MenuItem key={u.id} value={u.id}>{u.firstName} {u.lastName}</MenuItem>)}</TextField>
-            <TextField select label="Record type" value={recordType} onChange={e => setRecordType(e.target.value as 'ALL_TIME'|'UNIQUE')}><MenuItem value="ALL_TIME">All-time record</MenuItem><MenuItem value="UNIQUE">Unique achievement</MenuItem></TextField>
-            <TextField label="Record metric" value={recordMetric} onChange={e => setRecordMetric(e.target.value)} required placeholder="Fastest finish" />
-            <TextField label="Record value" value={recordValue} onChange={e => setRecordValue(e.target.value)} required placeholder="01:08:42" />
-            <TextField className="span-two" label="Verification note" value={recordNote} onChange={e => setRecordNote(e.target.value)} />
-            <Box className="span-two form-actions"><Button type="submit" variant="outlined">Publish verified record</Button></Box>
-          </Box>}
+  const { currentUser, signOut, users, categories, competitions, registrations, records, today } = useAppData();
+  const [params, setParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [filter, setFilter] = useState<EventFilter>('ALL');
+  const [search, setSearch] = useState('');
+  const [create, setCreate] = useState<{ sport?: CreatableSport } | null>(null);
+  const [notice, setNotice] = useState('');
+  const view: View = params.get('view') === 'users' ? 'users' : params.get('view') === 'records' ? 'records' : 'events';
+  const selected = view === 'events' ? competitions.find(c => c.id === params.get('event')) : undefined;
+  const currentNav = navigation.find(item => item.id === view)!;
+  if (!currentUser) return null;
+
+  const counts = new Map<string, number>();
+  registrations.forEach(entry => { if (entry.status === 'REGISTERED') counts.set(entry.competitionId, (counts.get(entry.competitionId) ?? 0) + 1); });
+  const live = competitions.filter(c => c.status === 'LIVE').length;
+  const ready = competitions.filter(c => eventStatus(c, today) === 'READY').length;
+  const registered = registrations.filter(r => r.status === 'REGISTERED').length;
+  const activeUsers = users.filter(u => u.role === 'ATHLETE' && u.status === 'ACTIVE').length;
+  const orderedStatuses: ReturnType<typeof eventStatus>[] = ['LIVE', 'READY', 'REGISTRATION_OPEN', 'UPCOMING', 'DRAFT', 'COMPLETED', 'CANCELLED'];
+  const visible = competitions.filter(c => (filter === 'ALL' || eventStatus(c, today) === filter) &&
+    c.name.toLowerCase().includes(search.trim().toLowerCase())).sort((a, b) =>
+    orderedStatuses.indexOf(eventStatus(a, today)) - orderedStatuses.indexOf(eventStatus(b, today)) ||
+    b.registrationDeadline.localeCompare(a.registrationDeadline));
+  const openEvent = (id: string) => {
+    setParams({ event: id });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+  const showEvents = () => setParams({});
+
+  return <div className="ops-shell">
+    <aside className="ops-sidebar">
+      <Link className="ops-brand" to="/admin" aria-label="Off Pace admin home">
+        <span className="ops-brand-mark"><BoltRounded /></span><span>OFF<span className="ops-brand-dot">·</span>PACE<small>ADMIN WORKSPACE</small></span>
+      </Link>
+      <nav className="ops-nav" aria-label="Admin workspace">
+        {navigation.map(({ id, title, icon: Icon, href }) => <Link key={id} to={href} aria-current={view === id ? 'page' : undefined}>
+          <Icon /><span>{title}</span>{view === id && <ChevronRightRounded className="ops-nav-arrow" />}
+        </Link>)}
+      </nav>
+      <div className="ops-sidebar-bottom">
+        <div className="ops-account">
+          <span className="ops-avatar">{currentUser.firstName[0]}{currentUser.lastName[0]}</span>
+          <span className="ops-account-copy"><strong>{currentUser.firstName} {currentUser.lastName}</strong><small>Administrator</small></span>
+          <button type="button" className="ops-icon-button" aria-label="Sign out" title="Sign out" onClick={() => { signOut(); navigate('/signin', { replace: true }); }}><LogoutRounded /></button>
+        </div>
+      </div>
+    </aside>
+    <main className="ops-main">
+      <header className="ops-topbar">
+        <div className="ops-breadcrumb"><span>Workspace</span><ChevronRightRounded /><strong>{currentNav.title}</strong>{selected && <><ChevronRightRounded /><span>{selected.name}</span></>}</div>
+        <div className="ops-today"><CalendarMonthOutlined />{formatEventDate(today, { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+      </header>
+      <div className="ops-content">
+        {view === 'events' && !selected && <>
+          <section className="ops-hero" aria-labelledby="ops-title">
+            <div className="ops-hero-copy">
+              <h1 id="ops-title">Event control room</h1>
+              <p>Open registration, run live competitions, and publish results.</p>
+              <Button className="ops-primary" startIcon={<AddRounded />} onClick={() => setCreate({})}>Create event</Button>
+            </div>
+          </section>
+          <section className="ops-metrics" aria-label="Workspace at a glance">
+            {[
+              { title: 'Total events', value: competitions.length, icon: CalendarMonthOutlined, color: 'lime' },
+              { title: 'Live now', value: live, icon: SensorsRounded, color: 'peach' },
+              { title: 'Registrations', value: registered, icon: EventAvailableOutlined, color: 'blue' },
+              { title: 'Active athletes', value: activeUsers, icon: GroupsOutlined, color: 'violet' },
+            ].map(({ title, value, icon: Icon, color }) => <div className="ops-metric" key={title}>
+              <div><span>{title}</span><strong>{value}</strong></div>
+              <span className={`pace-sport-icon pace-tone-${color}`}><Icon fontSize="inherit" /></span>
+            </div>)}
+          </section>
+          <div className="ops-dashboard-grid">
+            <section className="ops-panel" aria-labelledby="ops-events-title">
+              <div className="ops-panel-heading ops-events-heading">
+                <div><h2 id="ops-events-title">Events</h2><p>{ready ? `${ready} ${ready === 1 ? 'event ready' : 'events ready'} to start` : 'Manage your competitions'}</p></div>
+                <TextField className="ops-search" size="small" value={search} placeholder="Search events" onChange={e => setSearch(e.target.value)}
+                  inputProps={{ 'aria-label': 'Search events' }} InputProps={{ startAdornment: <InputAdornment position="start"><SearchRounded /></InputAdornment> }} />
+              </div>
+              <div className="ops-filters" aria-label="Filter events">
+                {filters.map(([id, label]) => <button type="button" key={id} onClick={() => setFilter(id)} aria-pressed={filter === id}>{label}</button>)}
+              </div>
+              {visible.length ? <div className="ops-table-scroll"><table className="ops-table">
+                <thead><tr><th scope="col">Event</th><th scope="col">Status</th><th scope="col">Deadline</th><th scope="col" className="ops-table-registrations">Registered</th><th scope="col"><span className="ops-sr-only">Actions</span></th></tr></thead>
+                <tbody>{visible.map(event => <tr key={event.id}>
+                  <td><Link className="ops-event-link" to={`/admin?event=${encodeURIComponent(event.id)}`}><SportIcon sport={event.eventId} />
+                    <span><strong>{event.name}</strong><small>{sportStyle(event.eventId).format} · {event.quarter} {event.year}</small></span></Link></td>
+                  <td><EventStatus event={event} today={today} /></td>
+                  <td className="ops-table-date">{formatEventDate(event.registrationDeadline, { day: 'numeric', month: 'short' })}</td>
+                  <td className="ops-table-registrations">{counts.get(event.id) ?? 0}</td>
+                  <td><Link className="ops-icon-button" to={`/admin?event=${encodeURIComponent(event.id)}`} aria-label={`Manage ${event.name}`}><ArrowForwardRounded /></Link></td>
+                </tr>)}</tbody>
+              </table></div> : <div className="ops-empty"><CalendarMonthOutlined /><strong>No events found</strong><p>{search || filter !== 'ALL' ? 'Try a different search or filter.' : 'Create an event to open registration.'}</p></div>}
+            </section>
+            <aside className="ops-dashboard-side">
+              <section className="ops-panel ops-catalog" aria-labelledby="ops-sports-title">
+                <div className="ops-panel-heading"><div><h2 id="ops-sports-title">Event types</h2><p>Select a sport to create an event.</p></div></div>
+                {creatableSports.map(id => <button className="ops-catalog-row" key={id} type="button" onClick={() => setCreate({ sport: id })}>
+                  <SportIcon sport={id} /><span><strong>{categories.find(c => c.id === id)?.name}</strong><small>{sportStyle(id).format}</small></span><ChevronRightRounded />
+                </button>)}
+              </section>
+              {ready > 0 && <button className="ops-ready-callout" type="button" onClick={() => { setSearch(''); setFilter('READY'); }}>
+                <span className="ops-ready-mark"><BoltRounded /></span><span><strong>Ready to go live</strong><small>{ready} {ready === 1 ? 'event has' : 'events have'} closed registration.</small></span><ArrowForwardRounded />
+              </button>}
+            </aside>
+          </div>
         </>}
-      </Paper>
-    </Box>
-    }{view === 'People' && <Box className="admin-section"><Box className="admin-section-title"><Box><Typography className="overline">03 · PEOPLE</Typography><Typography variant="h2">User directory</Typography></Box></Box>
-      <Paper className="admin-form-card" elevation={0}>{userError && <Typography color="error" fontSize={12} sx={{ mb: 2 }}>{userError}</Typography>}<Box component="form" onSubmit={createUser} className="admin-form-grid">
-        <TextField label="First name" value={firstName} onChange={e => setFirstName(e.target.value)} required/><TextField label="Last name" value={lastName} onChange={e => setLastName(e.target.value)} required/><TextField label="Employee ID" value={employeeId} onChange={e => setEmployeeId(e.target.value.toUpperCase())} required/><TextField select label="Role" value={role} onChange={e => setRole(e.target.value as UserRole)}><MenuItem value="ATHLETE">Athlete</MenuItem><MenuItem value="ADMIN">Admin</MenuItem></TextField><TextField select label="Status" value={userStatus} onChange={e => setUserStatus(e.target.value as UserStatus)}><MenuItem value="ACTIVE">Active</MenuItem><MenuItem value="RETIRED">Retired</MenuItem></TextField><TextField label="Department" value={department} onChange={e => setDepartment(e.target.value)}/><TextField label="Team" value={team} onChange={e => setTeam(e.target.value)}/><Box className="form-actions"><Button type="submit" variant="contained" startIcon={<AddRoundedIcon/>}>Add user</Button></Box>
-      </Box><Box className="admin-user-list">{users.map(u => <Box key={u.id}><span><b>{u.firstName} {u.lastName}</b><small>{u.employeeId} · {u.department || 'Department not set'}</small></span><TextField select size="small" value={u.role} onChange={e => updateUser(u.id, { role: e.target.value as UserRole })}><MenuItem value="ATHLETE">Athlete</MenuItem><MenuItem value="ADMIN">Admin</MenuItem></TextField><TextField select size="small" value={u.status} onChange={e => updateUser(u.id, { status: e.target.value as UserStatus })}><MenuItem value="ACTIVE">Active</MenuItem><MenuItem value="RETIRED">Retired</MenuItem></TextField></Box>)}</Box></Paper>
-    </Box>
-  }</Layout>;
+        {selected && <EventControl key={selected.id} event={selected} onBack={showEvents} notify={setNotice} />}
+        {view === 'users' && <UserManagement notify={setNotice} />}
+        {view === 'records' && <>
+          <div className="ops-page-title"><div><h1>Records</h1><p>Verified performances across event editions.</p></div></div>
+          <section className="ops-panel ops-inset">
+            {records.length ? records.map(record => <div className="ops-history-row" key={record.id}>
+              <SportIcon sport={record.eventId} /><div><strong>{record.metric}</strong><small>{users.find(u => u.id === record.userId)?.firstName} {users.find(u => u.id === record.userId)?.lastName} · {formatEventDate(record.achievedAt)}</small></div><b>{record.value}</b>
+            </div>) : <div className="ops-empty"><EmojiEventsOutlined /><strong>No verified records yet</strong><p>Open a completed event to publish a record.</p></div>}
+          </section>
+        </>}
+      </div>
+    </main>
+    {create && <EventSchedule initialSport={create.sport} onClose={() => setCreate(null)} onCreated={id => {
+      setCreate(null); openEvent(id); setNotice('Event created. Registration is open.');
+    }} />}
+    <Snackbar open={Boolean(notice)} message={notice} autoHideDuration={3500} onClose={() => setNotice('')} />
+  </div>;
 }

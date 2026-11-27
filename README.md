@@ -16,14 +16,16 @@ npm run dev
 ## Access rules
 
 - All routes except `/signin` require a signed-in roster user.
-- Athletes see Home and Athletes navigation. They can open a competition from Home to view its standings and register when registration is open.
-- The Events category index (`/events`) and Admin control room (`/admin`) are restricted to active administrators. Athletes can open individual event details from Home to see standings and register where eligible.
-- Admins can create competitions, change the registration deadline before the competition begins, open registration, mark an event upcoming, start it, publish live scores for registered participants, complete an event and verify records.
+- Athletes land on one event dashboard with open registration, live events, previous results, and verified all-time records. Event links open the selected edition’s standings and records.
+- The header avatar opens account details, the personal trophy cabinet, and sign-out.
+- The active administrator lands directly in the Admin control room (`/admin`). Athlete routes redirect administrators back to that workspace.
+- The administrator can create HYROX, Marathon, Chess and Carrom events. Registration opens on creation and closes at the end of the selected date in IST. The administrator can start the event after the deadline, score it while it is live, and end it to finalize results.
+- HYROX and Marathon rank registered athletes by finish time. Chess and Carrom track the winner and score by round. Previously recorded disciplines remain in the archive.
 - Retired employees can sign in to view historical information, but cannot register for competitions or use admin controls.
-- New accounts are created by an administrator in the user directory. Public self-registration is disabled.
+- The single administrator can add employees by first name, last name and employee ID, and remove them from the directory. Removal revokes sign-in access and preserves live and completed event history.
 
 ## Authentication limitation — read before production
 
-This is a frontend prototype. Sign-in currently matches an employee ID against the browser's local roster and stores the selected user in `localStorage`. An employee ID alone does not prove identity, and browser-side role checks are not a security boundary. The app must be connected to company SSO or a server-side identity provider before real employee data or internal competitions are deployed. Admin authorization, score writes and records must be enforced again by the backend.
+This is a frontend prototype. Sign-in matches an employee ID against the browser's local roster and keeps the active session in `sessionStorage`. An employee ID alone does not prove identity, and browser-side role checks are not a security boundary. The app must be connected to company SSO or a server-side identity provider before real employee data or internal competitions are deployed. Admin authorization, score writes and records must be enforced again by the backend.
 
 Competition data is currently persisted in `localStorage`, so changes are visible only in the same browser profile. A shared backend/database and server-sent events or WebSockets are needed for cross-device updates and genuinely live standings.

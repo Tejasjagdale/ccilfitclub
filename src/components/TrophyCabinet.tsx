@@ -149,9 +149,7 @@ export default function TrophyCabinet({ awards, collectionName, selectedAwardId,
     <section className="trophy-cabinet trophy-cabinet--wooden" aria-label="Athlete trophy cabinet">
       <header className="trophy-cabinet__header">
         <div>
-          <span className="trophy-cabinet__eyebrow">THE HALL OF ACHIEVEMENT</span>
           <strong>{collectionName}</strong>
-          <p>A collection built through effort, discipline and a little friendly competition.</p>
         </div>
         <div className="trophy-cabinet__count"><b>{String(awards.length).padStart(2, '0')}</b><span>AWARDS</span></div>
       </header>

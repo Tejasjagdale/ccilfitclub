@@ -1,57 +1,139 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link as RouterLink, useParams, useSearchParams } from 'react-router-dom';
-import { Box, Button, Chip, MenuItem, Paper, Select, Typography } from '@mui/material';
-import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
-import WorkspacePremiumRoundedIcon from '@mui/icons-material/WorkspacePremiumRounded';
-import Layout from '../components/Layout';
-import type { Competition } from '../types/domain';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
+import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded';
+import CalendarMonthOutlined from '@mui/icons-material/CalendarMonthOutlined';
+import CheckRounded from '@mui/icons-material/CheckRounded';
+import EmojiEventsOutlined from '@mui/icons-material/EmojiEventsOutlined';
+import GroupsOutlined from '@mui/icons-material/GroupsOutlined';
+import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
+import SportsScoreRounded from '@mui/icons-material/SportsScoreRounded';
+import WorkspacePremiumOutlined from '@mui/icons-material/WorkspacePremiumOutlined';
+import { SportIcon, sportStyle } from '../components/SportIcon';
 import { useAppData } from '../context/AppDataContext';
+import { athleteName, editionDate, standingsStage } from '../data/athleteEvents';
+import { eventStatus, formatEventDate, registrationOpen, statusLabel } from '../data/competitionLifecycle';
+import { roundLabel } from '../data/scoring';
+import type { EventRecord } from '../types/domain';
 
-const statusLabel: Record<string,string> = { DRAFT: 'Draft', REGISTRATION_OPEN: 'Registration open', UPCOMING: 'Upcoming', LIVE: 'Live now', COMPLETED: 'Completed', CANCELLED: 'Cancelled' };
 export default function EventDetailPage() {
-  const { eventId = '' } = useParams(); const [searchParams] = useSearchParams(); const { categories, competitions, registrations, results, records, users, currentUser, register } = useAppData();
-  const category = categories.find(c => c.id === eventId); const eventCompetitions = competitions.filter(c => c.eventId === eventId).sort((a,b) => b.startAt.localeCompare(a.startAt));
-  const requestedCompetition = eventCompetitions.find(c => c.id === searchParams.get('competition'));
-  const quarters = Array.from(new Set(eventCompetitions.map(c => `${c.quarter} ${c.year}`)));
-  const [quarter, setQuarter] = useState(requestedCompetition ? `${requestedCompetition.quarter} ${requestedCompetition.year}` : (quarters[0] ?? ''));
-  const quarterCompetitions = useMemo(() => eventCompetitions.filter(c => `${c.quarter} ${c.year}` === quarter), [eventCompetitions, quarter]);
-  const [selectedId, setSelectedId] = useState(requestedCompetition?.id ?? '');
-  useEffect(() => { if (requestedCompetition) { setQuarter(`${requestedCompetition.quarter} ${requestedCompetition.year}`); setSelectedId(requestedCompetition.id); } }, [requestedCompetition?.id]);
-  const selected = eventCompetitions.find(c => c.id === selectedId) ?? quarterCompetitions[0] ?? eventCompetitions[0];
-  if (!category) return <Layout><Typography>Event not found.</Typography></Layout>;
-  const allCompetitionResults = selected ? results.filter(r => r.competitionId === selected.id) : [];
-  const finalResults = allCompetitionResults.filter(r => r.stage.toUpperCase() === 'FINAL');
-  const latestStage = allCompetitionResults.sort((a,b) => b.updatedAt.localeCompare(a.updatedAt))[0]?.stage;
-  const activeStage = finalResults.length ? 'FINAL' : latestStage;
-  const selectedResults = allCompetitionResults.filter(r => r.stage === activeStage).sort((a,b) => a.rank - b.rank);
-  const recordList = records.filter(r => r.eventId === eventId).sort((a,b) => a.recordType.localeCompare(b.recordType));
-  const registered = selected && currentUser ? registrations.some(r => r.competitionId === selected.id && r.userId === currentUser.id && r.status === 'REGISTERED') : false;
-  const entrants = registrations.filter(r => r.competitionId === selected?.id && r.status === 'REGISTERED');
-  const participantIds = [...new Set([...entrants.map(r => r.userId), ...allCompetitionResults.map(r => r.userId)])];
-  const full = !!selected && entrants.length >= selected.capacity;
-  const canRegister = Boolean(!full && selected && currentUser?.role === 'ATHLETE' && currentUser.status === 'ACTIVE' && selected.status === 'REGISTRATION_OPEN' && new Date(`${selected.registrationDeadline}T23:59:59`) >= new Date() && (!selected.registrationStart || new Date(`${selected.registrationStart}T00:00:00`) <= new Date()));
-  const personName = (id: string) => { const u = users.find(x => x.id === id); return u ? `${u.firstName} ${u.lastName}` : 'Unknown athlete'; };
-  return <Layout>
-    <Button component={RouterLink} to={currentUser?.role === 'ADMIN' ? '/events' : '/'} startIcon={<ArrowBackRoundedIcon />} className="back-link">{currentUser?.role === 'ADMIN' ? 'All events' : 'Back home'}</Button>
-    <Box className="event-detail-hero"><span className="category-icon">{category.icon}</span><Box sx={{ flex: 1 }}><Typography className="overline">EVENT CATEGORY</Typography><Typography variant="h1">{category.name}</Typography><Typography color="text.secondary">{category.description}</Typography></Box><Chip label={category.format} className="quiet-chip" /></Box>
-    <Box className="event-history-controls"><Box><Typography className="overline">COMPETITION ARCHIVE</Typography><Typography variant="h2">Quarterly results & standings</Typography></Box><Select size="small" value={quarter} onChange={e => { setQuarter(e.target.value); setSelectedId(''); }} displayEmpty>{quarters.map(q => <MenuItem key={q} value={q}>{q}</MenuItem>)}</Select></Box>
-    {quarterCompetitions.length > 1 && <Box className="competition-pills">{quarterCompetitions.map(c => <Button key={c.id} onClick={() => setSelectedId(c.id)} className={(selected?.id === c.id || (!selectedId && selected?.id === quarterCompetitions[0].id)) ? 'pill-active' : ''}>{c.name}</Button>)}</Box>}
-    {selected ? <>
-      <Paper className="competition-detail-card" elevation={0}>
-        <Box className="competition-detail-title"><Box><Typography className="overline">{selected.quarter} {selected.year} COMPETITION</Typography><Typography variant="h4">{selected.name}</Typography></Box><Chip label={statusLabel[selected.status]} className={selected.status === 'LIVE' ? 'live-chip' : selected.status === 'COMPLETED' ? 'complete-chip' : 'quiet-chip'} /></Box>
-        <Typography color="text.secondary" fontSize={13}>{selected.description}</Typography>
-        <Box className="competition-meta"><span>◷ {new Date(selected.startAt).toLocaleString()}</span><span>⌖ {selected.venue}</span><span>♙ {registrations.filter(r => r.competitionId === selected.id && r.status === 'REGISTERED').length}/{selected.capacity} registered</span></Box>
-        {selected.status === 'REGISTRATION_OPEN' && <Box className="registration-banner"><Box><b>Registration is open</b><span>Last date: {new Date(`${selected.registrationDeadline}T00:00:00`).toLocaleDateString()}</span></Box>{!currentUser ? <Button component={RouterLink} to="/signin" state={{ from: `/events/${eventId}` }} variant="contained">Sign in to register</Button> : registered ? <Chip label="You're registered" className="status-active" /> : <Button variant="contained" disabled={!canRegister} onClick={() => currentUser && register(selected.id, currentUser.id)}>{full ? 'Event full' : 'Register for event'}</Button>}</Box>}
-      </Paper>
-      <Paper className="competition-detail-card" elevation={0}><Typography variant="h5">Participants · {participantIds.length}</Typography>
-        {participantIds.length ? <Box sx={{display:'flex', flexWrap:'wrap',gap:1, mt:2}}>{participantIds.map(id=><Chip key={id} label={personName(id) + (id === currentUser?.id ? ' (you)' : '')}/>)}</Box> : <Typography color="text.secondary">No registrations yet.</Typography>}
-      </Paper>
-      <Box className="results-record-grid"><Paper className="results-panel" elevation={0}><Box className="panel-heading"><Box><Typography className="overline">OFFICIAL RESULTS</Typography><Typography variant="h5">{selected.status === 'LIVE' ? 'Live standings' : 'Final standings'}{activeStage ? ` · ${activeStage}` : ''}</Typography></Box>{selected.status === 'LIVE' && <Chip label="LIVE" className="live-chip" />}</Box>
-        {selectedResults.length ? <Box className="standings-table"><Box className="standings-head"><span>RANK</span><span>ATHLETE</span><span>{selectedResults[0].scoreLabel.toUpperCase()}</span><span>STAGE</span></Box>{selectedResults.map(row => <Box className="standing-row" key={row.id}><b className={`rank rank-${row.rank}`}>{row.rank === 1 ? '01' : String(row.rank).padStart(2,'0')}</b><Box><b>{personName(row.userId)}</b><small>{row.detail}</small></Box><strong>{row.score}</strong><span>{row.stage}</span></Box>)}</Box> : <Box className="empty-results"><span>⌁</span><b>No scores published yet</b><small>Standings will appear here when the admin updates results.</small></Box>}
-      </Paper>
-      <Paper className="records-panel" elevation={0}><Box className="panel-heading"><Box><Typography className="overline">ACROSS ALL EDITIONS</Typography><Typography variant="h5">Discipline records</Typography></Box><WorkspacePremiumRoundedIcon /></Box>
-        {recordList.length ? recordList.map(record => <Box className="record-item" key={record.id}><span className="record-medal"><WorkspacePremiumRoundedIcon /></span><Box><Chip label={record.recordType.replace('_',' ')} size="small" className="record-type-chip"/><b>{record.metric}</b><small>{personName(record.userId)} · {new Date(`${record.achievedAt}T00:00:00`).toLocaleDateString()}</small><p>{record.note}</p></Box><strong>{record.value}</strong></Box>) : <Typography color="text.secondary" fontSize={13}>No official records have been verified for this event yet.</Typography>}
-      </Paper></Box>
-    </> : <Paper className="empty-results" elevation={0}><b>No competitions in this quarter</b><small>When an admin schedules a competition, it will appear here.</small></Paper>}
-  </Layout>;
+  const { eventId = '' } = useParams();
+  const [params, setParams] = useSearchParams();
+  const { categories, competitions, registrations, results, matches, records, users, currentUser, register, today } = useAppData();
+  const category = categories.find(item => item.id === eventId);
+  const editions = competitions.filter(item => item.eventId === eventId && item.status !== 'DRAFT')
+    .sort((a, b) => editionDate(b).localeCompare(editionDate(a)));
+  const edition = editions.find(item => item.id === params.get('competition')) ?? editions[0];
+  const quarters = [...new Set(editions.map(item => `${item.quarter} ${item.year}`))];
+  const people = new Map(users.map(user => [user.id, user]));
+  const personName = (id: string) => athleteName(people.get(id));
+
+  if (!category) return <><Link className="ath-back-link" to="/"><ArrowBackRounded />All events</Link><h1 className="ath-page-title">Event not found</h1></>;
+
+  const scores = results.filter(row => row.competitionId === edition?.id);
+  const editionMatches = matches.filter(match => match.competitionId === edition?.id);
+  const stage = standingsStage(scores, editionMatches.length > 0);
+  const standings = scores.filter(row => row.stage === stage).sort((a, b) => a.rank - b.rank);
+  const entrants = registrations.filter(row => row.competitionId === edition?.id && row.status === 'REGISTERED');
+  const participants = [...new Set([...entrants.map(row => row.userId), ...scores.map(row => row.userId)])];
+  const joined = entrants.some(row => row.userId === currentUser?.id);
+  const open = edition && registrationOpen(edition, today);
+  const full = !!edition && edition.capacity > 0 && entrants.length >= edition.capacity;
+  const status = edition ? eventStatus(edition, today) : null;
+  const statusTone = status === 'REGISTRATION_OPEN' && open ? 'open' : status?.toLowerCase() ?? 'neutral';
+  const statusText = status === 'READY' ? 'Registration closed' : status === 'REGISTRATION_OPEN' && !open
+    ? 'Registration opens later' : status ? statusLabel[status] : '';
+  const recordList = records.filter(record => record.eventId === eventId).sort((a, b) => b.achievedAt.localeCompare(a.achievedAt));
+  const allTime = recordList.filter(record => record.recordType === 'ALL_TIME');
+  const achievements = recordList.filter(record => record.recordType === 'UNIQUE');
+  const standingsTitle = edition?.status === 'LIVE' ? 'Live standings' : edition?.status === 'COMPLETED' ? 'Final standings' : 'Standings';
+  const currentScoreLabel = standings[0]?.scoreLabel ?? category.scoreLabel;
+
+  function recordRow(record: EventRecord) {
+    return <li className="ath-record" key={record.id}>
+      <div><strong>{record.metric}</strong><span>{personName(record.userId)} · {formatEventDate(record.achievedAt)}</span>
+        {record.note && <p>{record.note}</p>}
+      </div>
+      <b>{record.value}</b>
+    </li>;
+  }
+
+  return <>
+    <Link className="ath-back-link" to="/"><ArrowBackRounded />All events</Link>
+    <section className="ath-panel ath-event-detail" aria-labelledby="ath-detail-title">
+      <div className="ath-detail-top">
+        <SportIcon sport={eventId} />
+        <div className="ath-detail-identity">
+          <div className="ath-detail-caption">{category.name} · {sportStyle(eventId).format}</div>
+          <h1 id="ath-detail-title">{edition?.name ?? category.name}</h1>
+        </div>
+        {status && <span className={`ath-status ath-status-${statusTone}`}><i />{statusText}</span>}
+      </div>
+      <p className="ath-detail-description">{edition?.description || category.description}</p>
+      {edition && <div className="ath-detail-meta">
+        {edition.startAt && <span><CalendarMonthOutlined />{formatEventDate(edition.startAt, { dateStyle: 'medium', timeStyle: 'short' })}</span>}
+        {edition.venue && <span><PlaceOutlined />{edition.venue}</span>}
+        <span><GroupsOutlined />{entrants.length}{edition.capacity > 0 ? ` / ${edition.capacity}` : ''} registered</span>
+      </div>}
+      {open && <div className="ath-registration-banner">
+        <div><strong>Registration is open</strong><span>Closes at the end of {formatEventDate(edition.registrationDeadline)} (IST)</span></div>
+        {joined ? <span className="ath-status ath-status-open" role="status"><CheckRounded />You're registered</span>
+          : currentUser?.status === 'ACTIVE' && <button className="ath-action" type="button" disabled={full} onClick={() => register(edition.id, currentUser.id)}>{full ? 'Event full' : 'Register for event'}</button>}
+      </div>}
+    </section>
+
+    <div className="ath-detail-grid">
+      <section className="ath-panel ath-standings" aria-labelledby="ath-standings-title">
+        <div className="ath-panel-heading">
+          <span className="ath-section-icon ath-icon-live"><SportsScoreRounded /></span>
+          <div><h2 id="ath-standings-title">{standingsTitle}</h2>{stage && <p>{roundLabel(stage)}</p>}</div>
+          {edition && editions.length > 1 && <label className="ath-edition-select">
+            <span>Event edition</span>
+            <select value={edition.id} onChange={e => setParams({ competition: e.target.value }, { preventScrollReset: true })}>
+              {quarters.map(quarter => <optgroup label={quarter} key={quarter}>
+                {editions.filter(item => `${item.quarter} ${item.year}` === quarter).map(item =>
+                  <option key={item.id} value={item.id}>{item.name} · {formatEventDate(editionDate(item), { day: 'numeric', month: 'short' })}</option>)}
+              </optgroup>)}
+            </select>
+          </label>}
+        </div>
+        {standings.length > 0 && <table className="ath-standings-table">
+          <thead><tr><th scope="col">Rank</th><th scope="col">Athlete</th><th scope="col">{currentScoreLabel}</th></tr></thead>
+          <tbody>{standings.map(result => <tr key={result.id} className={result.userId === currentUser?.id ? 'ath-own-result' : ''}>
+            <td><span className={`ath-rank${result.rank === 1 ? ' ath-rank-first' : ''}`}>{result.rank}</span></td>
+            <td><strong>{personName(result.userId)}</strong>{result.userId === currentUser?.id && <span className="ath-you">You</span>}{result.detail && <small>{result.detail}</small>}</td>
+            <td><b>{result.score}</b></td>
+          </tr>)}</tbody>
+        </table>}
+        {editionMatches.length > 0 && <div className="ath-matches">
+          <h3>Match results</h3>
+          <ul>{editionMatches.map(match => <li key={match.id}>
+            <div><strong>{personName(match.winnerId)} defeated {personName(match.opponentId)}</strong>
+              <span>{roundLabel(match.stage)} · Margin {match.winnerScore - match.opponentScore}</span></div>
+            <b>{match.winnerScore}–{match.opponentScore}</b>
+          </li>)}</ul>
+        </div>}
+        {standings.length === 0 && editionMatches.length === 0 && <div className="ath-empty ath-empty-standings">
+          <SportsScoreRounded /><strong>{edition ? 'No scores published yet' : 'No event editions yet'}</strong>
+          <p>{edition ? 'Results will appear here once they are recorded.' : 'Standings will appear when a competition has results.'}</p>
+        </div>}
+      </section>
+      <section id="records" className="ath-panel ath-records" aria-labelledby="ath-records-title">
+        <div className="ath-panel-heading">
+          <span className="ath-section-icon ath-icon-record"><EmojiEventsOutlined /></span>
+          <div><h2 id="ath-records-title">All-time records</h2><p>Across all {category.name} editions</p></div>
+        </div>
+        {allTime.length ? <ul>{allTime.map(recordRow)}</ul> : <p className="ath-empty">No all-time records have been verified yet.</p>}
+        {achievements.length > 0 && <div className="ath-achievements">
+          <h3><WorkspacePremiumOutlined />Unique achievements</h3>
+          <ul>{achievements.map(recordRow)}</ul>
+        </div>}
+      </section>
+    </div>
+
+    {edition && participants.length > 0 && <section className="ath-panel ath-participants" aria-labelledby="ath-participants-title">
+      <div className="ath-panel-heading"><span className="ath-section-icon ath-icon-registration"><GroupsOutlined /></span>
+        <h2 id="ath-participants-title">Participants</h2><span className="ath-section-count">{participants.length}</span>
+      </div>
+      <ul>{participants.map(id => <li key={id}>{personName(id)}{id === currentUser?.id && <span> (you)</span>}</li>)}</ul>
+    </section>}
+  </>;
 }

@@ -1,5 +1,5 @@
 export type UserRole = 'ATHLETE' | 'ADMIN';
-export type UserStatus = 'ACTIVE' | 'RETIRED';
+export type UserStatus = 'ACTIVE' | 'RETIRED' | 'REMOVED';
 export type CompetitionStatus = 'DRAFT' | 'REGISTRATION_OPEN' | 'UPCOMING' | 'LIVE' | 'COMPLETED' | 'CANCELLED';
 export type ResultStatus = 'PENDING' | 'FINAL';
 export type EventFormat = 'TIMED' | 'DISTANCE' | 'KNOCKOUT' | 'POINTS' | 'SETS';
@@ -23,6 +23,10 @@ export interface Registration {
 export interface CompetitionResult {
   id: string; competitionId: string; userId: string; stage: string; rank: number;
   score: string; scoreLabel: string; detail: string; status: ResultStatus; updatedAt: string;
+}
+export interface KnockoutMatch {
+  id: string; competitionId: string; stage: string; winnerId: string; opponentId: string;
+  winnerScore: number; opponentScore: number;
 }
 export interface EventRecord {
   id: string; eventId: string; userId: string; competitionId: string; recordType: 'ALL_TIME' | 'UNIQUE';

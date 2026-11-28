@@ -1,6 +1,6 @@
 {
   "settings/admin": {
-    "uid": "ADMIN_BROWSER_UID"
+    "key": "id-ADM007"
   },
   "core/directory": {
     "u": {
@@ -34,6 +34,9 @@
       "u-admin": "ADM007",
       "u-1": "EMP001"
     }
+  },
+  "employeeKeys/id-ADM007": {
+    "p": "u-admin"
   },
   "employeeKeys/id-EMP001": {
     "p": "u-1"

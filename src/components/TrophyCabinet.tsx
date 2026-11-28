@@ -123,38 +123,41 @@ export default function TrophyCabinet({ awards, collectionName }: Props) {
 
   return <>
     <section className="trophy-display" aria-labelledby={headingId}>
-      <header className="trophy-display__header">
-        <h2 id={headingId}>{collectionName}</h2>
-        <span className="trophy-display__count">{awards.length} {awards.length === 1 ? 'award' : 'awards'}</span>
-      </header>
-      <div className="trophy-display__case">
-        {awards.length > 0 ? <ul className="trophy-display__grid">
-          {awards.map(award => <li key={award.id}>
-            <button type="button" className="trophy-tile" aria-haspopup="dialog" onClick={() => {
-              setSelectedId(award.id);
-              setDetailsOpen(true);
-            }}>
-              <span className={`trophy-stage trophy-stage--${award.type} trophy-stage--bay`}>
-                <span className="trophy-bay__light" aria-hidden="true" />
-                <span className="trophy-bay__pedestal" aria-hidden="true" />
-                <TrophyArtwork type={award.type} />
-                <span className="trophy-bay__glass" aria-hidden="true" />
-              </span>
-              <span className="trophy-tile__label">
-                <span className="trophy-tile__plate">
-                  <span className="trophy-tile__copy">
-                    <span className="trophy-tile__event">{award.event}</span>
-                    <strong>{award.title}</strong>
-                    <span className="trophy-tile__placement">{award.placement}</span>
-                  </span>
-                  <span className="trophy-tile__arrow"><ArrowForwardRounded /></span>
+      <div className="trophy-display__front">
+        <header className="trophy-display__header">
+          <h2 id={headingId}>{collectionName}</h2>
+          <span className="trophy-display__count">{awards.length} {awards.length === 1 ? 'award' : 'awards'}</span>
+        </header>
+        <div className="trophy-display__case">
+          {awards.length > 0 ? <ul className="trophy-display__grid">
+            {awards.map(award => <li key={award.id}>
+              <button type="button" className="trophy-tile" aria-haspopup="dialog" onClick={() => {
+                setSelectedId(award.id);
+                setDetailsOpen(true);
+              }}>
+                <span className={`trophy-stage trophy-stage--${award.type} trophy-stage--bay`}>
+                  <span className="trophy-bay__floor" aria-hidden="true" />
+                  <span className="trophy-bay__light" aria-hidden="true" />
+                  <span className="trophy-bay__pedestal" aria-hidden="true" />
+                  <TrophyArtwork type={award.type} />
+                  <span className="trophy-bay__glass" aria-hidden="true" />
                 </span>
-              </span>
-            </button>
-          </li>)}
-        </ul> : <div className="trophy-display__empty"><EmojiEventsOutlined /><p>No trophies yet</p></div>}
+                <span className="trophy-tile__label">
+                  <span className="trophy-tile__plate">
+                    <span className="trophy-tile__copy">
+                      <span className="trophy-tile__event">{award.event}</span>
+                      <strong>{award.title}</strong>
+                      <span className="trophy-tile__placement">{award.placement}</span>
+                    </span>
+                    <span className="trophy-tile__arrow"><ArrowForwardRounded /></span>
+                  </span>
+                </span>
+              </button>
+            </li>)}
+          </ul> : <div className="trophy-display__empty"><EmojiEventsOutlined /><p>No trophies yet</p></div>}
+        </div>
+        <div className="trophy-display__base" aria-hidden="true" />
       </div>
-      <div className="trophy-display__base" aria-hidden="true" />
     </section>
     {selected && <TrophyDetails award={selected} open={detailsOpen} onClose={() => setDetailsOpen(false)} />}
   </>;

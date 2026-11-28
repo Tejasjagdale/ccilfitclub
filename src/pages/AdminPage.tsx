@@ -17,6 +17,7 @@ import EventControl from './admin/EventControl';
 import UserManagement from './admin/UserManagement';
 import RecordManagement from './admin/RecordManagement';
 import { SportIcon, sportStyle } from '../components/SportIcon';
+import ThemeToggle from '../components/ThemeToggle';
 import { useAppData } from '../context/AppDataContext';
 import { creatableSports, eventStatus, formatEventDate, statusLabel, type CreatableSport } from '../data/competitionLifecycle';
 import type { Competition } from '../types/domain';
@@ -91,7 +92,10 @@ export default function AdminPage() {
     <main className="ops-main">
       <header className="ops-topbar">
         <div className="ops-breadcrumb"><span>Workspace</span><ChevronRightRounded /><strong>{currentNav.title}</strong>{selected && <><ChevronRightRounded /><span>{selected.name}</span></>}</div>
-        <div className="ops-today"><CalendarMonthOutlined />{formatEventDate(today, { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+        <div className="ops-topbar-actions">
+          <div className="ops-today"><CalendarMonthOutlined />{formatEventDate(today, { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+          <ThemeToggle />
+        </div>
       </header>
       <div className="ops-content">
         {view === 'events' && !selected && <>

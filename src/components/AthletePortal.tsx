@@ -7,6 +7,7 @@ import EmojiEventsOutlined from '@mui/icons-material/EmojiEventsOutlined';
 import ExpandMoreRounded from '@mui/icons-material/ExpandMoreRounded';
 import LogoutRounded from '@mui/icons-material/LogoutRounded';
 import { useAppData } from '../context/AppDataContext';
+import ThemeToggle from './ThemeToggle';
 import './AthletePortal.css';
 
 export default function AthletePortal() {
@@ -36,11 +37,14 @@ export default function AthletePortal() {
         <nav className="ath-header-nav" aria-label="Athlete portal">
           <Link to="/" aria-current={onEvents ? 'page' : undefined}><CalendarMonthOutlined />Events</Link>
         </nav>
-        <button id="ath-account-button" className="ath-account-button" type="button" aria-label="Account menu"
-          aria-haspopup="menu" aria-controls={anchor ? 'ath-account-menu' : undefined} aria-expanded={Boolean(anchor)}
-          onClick={e => setAnchor(e.currentTarget)}>
-          <span className="ath-avatar" aria-hidden="true">{initials}</span><ExpandMoreRounded className="ath-account-chevron" />
-        </button>
+        <div className="ath-header-actions">
+          <ThemeToggle />
+          <button id="ath-account-button" className="ath-account-button" type="button" aria-label="Account menu"
+            aria-haspopup="menu" aria-controls={anchor ? 'ath-account-menu' : undefined} aria-expanded={Boolean(anchor)}
+            onClick={e => setAnchor(e.currentTarget)}>
+            <span className="ath-avatar" aria-hidden="true">{initials}</span><ExpandMoreRounded className="ath-account-chevron" />
+          </button>
+        </div>
         <Menu anchorEl={anchor} open={Boolean(anchor)} onClose={() => setAnchor(null)}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           PaperProps={{ className: 'ath-account-menu' }} MenuListProps={{ id: 'ath-account-menu', 'aria-labelledby': 'ath-account-button' }}>

@@ -6,7 +6,6 @@
   --ops-bg: #f4f6f1;
   --ops-green: #214b35;
   --ops-lime: #d7f47a;
-  color-scheme: light;
   color: var(--ops-ink);
   font-family: 'DM Sans', Arial, sans-serif;
 }
@@ -44,6 +43,7 @@
 
 .ops-main { min-width: 0; }
 .ops-topbar { min-height: 64px; padding: 0 clamp(20px, 3vw, 48px); display: flex; justify-content: space-between; align-items: center; gap: 12px; border-bottom: 1px solid var(--ops-line); background: #fbfcf9; }
+.ops-topbar-actions { display: flex; align-items: center; gap: 8px; color: var(--ops-muted); }
 .ops-breadcrumb, .ops-today { display: flex; align-items: center; gap: 8px; color: var(--ops-muted); font-size: 12px; }
 .ops-breadcrumb { min-width: 0; }
 .ops-breadcrumb > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -200,6 +200,54 @@
 .ops-sport-option input:checked + span { border-color: #799761; background: #f1f6e8; box-shadow: inset 0 0 0 1px #799761; }
 .ops-sport-option input:focus-visible + span { outline: 2px solid #4b7e4a; outline-offset: 2px; }
 .ops-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+:root[data-theme="dark"] :is(.ops-shell, .ops-dialog, .ops-popup) {
+  --ops-ink: var(--pace-ink);
+  --ops-muted: var(--pace-muted);
+  --ops-line: var(--pace-line);
+  --ops-paper: var(--pace-paper);
+  --ops-bg: var(--pace-canvas);
+  --ops-green: var(--pace-accent);
+}
+:root[data-theme="dark"] :is(.ops-sidebar, .ops-topbar, .ops-lifecycle, .ops-sport-option-body) { background: var(--ops-paper); }
+:root[data-theme="dark"] .ops-dialog.MuiPaper-root { background: var(--ops-paper) !important; }
+:root[data-theme="dark"] :is(.ops-table th, .ops-step-mark, .ops-score-empty, .ops-placement) { background: var(--pace-inset); }
+:root[data-theme="dark"] :is(.ops-table :is(td, th, tr), .ops-shell .ops-catalog-row,
+  .ops-score-empty, .ops-history-row, .ops-roster-row, .ops-shell .ops-secondary,
+  .ops-dialog .ops-secondary) { border-color: var(--ops-line); }
+:root[data-theme="dark"] :is(.ops-nav a:hover, .ops-nav a[aria-current], .ops-icon-button:hover,
+  .ops-shell .ops-secondary:hover, .ops-dialog .ops-secondary:hover, .ops-shell .ops-filters button:hover,
+  .ops-table tbody tr:hover, .ops-catalog-row:hover, .ops-sport-option input:hover + span) { background: var(--pace-soft); }
+:root[data-theme="dark"] :is(.ops-brand-dot, .ops-today svg, .ops-event-link:hover strong,
+  .ops-catalog-row > svg, .ops-empty > svg, .ops-shell .ops-back, .ops-event-facts svg,
+  .ops-history-row > b, .ops-placement, .ops-shell a.ops-record-edition-link,
+  .ops-record-note summary, .ops-ready-callout small) { color: var(--ops-green); }
+:root[data-theme="dark"] :is(.ops-shell .ops-secondary, .ops-dialog .ops-secondary, .ops-icon-button) { color: var(--ops-muted) !important; }
+:root[data-theme="dark"] .ops-icon-button:hover { color: var(--ops-green) !important; }
+:root[data-theme="dark"] .ops-remove:hover { color: #F1A8A1 !important; background: #412A2A; }
+:root[data-theme="dark"] .ops-nav a[aria-current] { color: var(--ops-green); }
+:root[data-theme="dark"] :is(.ops-shell .ops-search .MuiOutlinedInput-root, .ops-shell .MuiOutlinedInput-root, .ops-dialog .MuiOutlinedInput-root) {
+  background: var(--pace-inset) !important;
+}
+:root[data-theme="dark"] :is(.ops-shell, .ops-dialog) .MuiOutlinedInput-notchedOutline { border-color: var(--pace-input-line) !important; }
+:root[data-theme="dark"] :is(.ops-shell, .ops-dialog) .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--ops-green) !important;
+}
+:root[data-theme="dark"] .ops-shell .MuiInputBase-input::placeholder { color: var(--ops-muted); }
+:root[data-theme="dark"] :is(.ops-shell .ops-filters button[aria-pressed='true'], .ops-shell .ops-ready-callout,
+  .ops-lifecycle .ops-step-current, .ops-step-done .ops-step-mark, .ops-sport-option input:checked + span,
+  .ops-record-value) { background: #2A4130; border-color: #46644C; color: #C1E3A9; }
+:root[data-theme="dark"] :is(.ops-ready-mark, .ops-step-current .ops-step-mark) { background: #3E6347; color: #ECF6E7; }
+:root[data-theme="dark"] .ops-shell .ops-on-light { background: var(--ops-green); color: var(--pace-on-lime) !important; }
+:root[data-theme="dark"] .ops-shell .ops-on-light:hover { background: #CBE8A8; }
+:root[data-theme="dark"] .ops-badge { background: var(--pace-inset); color: var(--ops-muted); }
+:root[data-theme="dark"] .ops-badge-live { background: #442D23; color: #F4BE9D; }
+:root[data-theme="dark"] .ops-badge-ready { background: #3D3421; color: #EED18F; }
+:root[data-theme="dark"] .ops-badge-registration_open { background: #2A4130; color: #C1E3A9; }
+:root[data-theme="dark"] .ops-badge-completed { background: #263B48; color: #B7D5EA; }
+:root[data-theme="dark"] .ops-badge-cancelled { background: #412A2A; color: #F1A8A1; }
+:root[data-theme="dark"] :is(.ops-shell, .ops-dialog) :focus-visible,
+:root[data-theme="dark"] .ops-sport-option input:focus-visible + span { outline-color: var(--ops-green); }
 
 @media (max-width: 1180px) {
   .ops-shell { grid-template-columns: 192px minmax(0, 1fr); }

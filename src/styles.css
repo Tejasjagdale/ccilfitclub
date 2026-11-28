@@ -39,7 +39,6 @@ a { text-decoration: none; }
 .auth-status-note { text-align: center; color: #9aa39e; font-size: 10px; margin-top: 12px !important; }
 
 /* Dark-only theme */
-:root { color-scheme: dark; }
 body, .site { background: #141b1e !important; color: #e7eeeb !important; }
 .appbar { background: #1b2529 !important; color: #e7eeeb !important; border-bottom-color: #2b393d !important; }
 .brand { color: #e7eeeb !important; }
@@ -563,6 +562,8 @@ body { background:#fff6ef !important; color:var(--ink) !important; }
 :root {
   color-scheme: light;
   --pace-ink: #1B272B;
+  --pace-on-lime: #1B272B;
+  --pace-brand-surface: #1B272B;
   --pace-ink-2: #26363A;
   --pace-lime: #B2D560;
   --pace-lime-dark: #91B33E;
@@ -572,16 +573,30 @@ body { background:#fff6ef !important; color:var(--ink) !important; }
   --pace-muted: #68766F;
   --pace-soft: #EAF0DF;
 }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --pace-ink: #EDF5ED;
+  --pace-ink-2: #D7E5DB;
+  --pace-canvas: #121B17;
+  --pace-paper: #1A2620;
+  --pace-line: #34473C;
+  --pace-muted: #ADBCB1;
+  --pace-soft: #26382D;
+  --pace-brand-surface: #18251E;
+  --pace-inset: #202E26;
+  --pace-accent: #B9DC8F;
+  --pace-input-line: #506858;
+}
 html, body { background: var(--pace-canvas) !important; color: var(--pace-ink) !important; }
 body, .site { background: var(--pace-canvas) !important; color: var(--pace-ink) !important; }
-.appbar { background: var(--pace-ink) !important; color: #fff !important; border-bottom: 0 !important; box-shadow: 0 4px 18px rgba(27,39,43,.12); }
+.appbar { background: var(--pace-brand-surface) !important; color: #fff !important; border-bottom: 0 !important; box-shadow: 0 4px 18px rgba(27,39,43,.12); }
 .brand, .brand:hover { color: #fff !important; }
 .brand span { color: var(--pace-lime) !important; }
 .nav button { color: #C5D0C9 !important; border-radius: 9px; }
 .nav button.nav-active { color: var(--pace-lime) !important; background: rgba(178,213,96,.13) !important; }
 .header-action { color: var(--pace-lime) !important; border-color: rgba(178,213,96,.55) !important; }
 .nav-user { color: #E3E9E4 !important; }
-.nav-user .MuiAvatar-root { background: var(--pace-lime) !important; color: var(--pace-ink) !important; }
+.nav-user .MuiAvatar-root { background: var(--pace-lime) !important; color: var(--pace-on-lime) !important; }
 .nav-user button { color: var(--pace-lime) !important; }
 
 .page-container { background: transparent !important; }
@@ -592,7 +607,7 @@ body, .site { background: var(--pace-canvas) !important; color: var(--pace-ink) 
 .home-intro h1 span { color: #789C2F !important; }
 .intro-copy, .page-heading > p:last-child, .metric-label, .upcoming-count { color: var(--pace-muted) !important; }
 .intro-actions .MuiButton-contained, .auth-card .MuiButton-contained {
-  background: var(--pace-lime) !important; color: var(--pace-ink) !important;
+  background: var(--pace-lime) !important; color: var(--pace-on-lime) !important;
 }
 .intro-actions .MuiButton-contained:hover, .auth-card .MuiButton-contained:hover {
   background: #C1E477 !important; box-shadow: 0 7px 18px rgba(145,179,62,.22);
@@ -639,7 +654,7 @@ body, .site { background: var(--pace-canvas) !important; color: var(--pace-ink) 
   background: #fff !important; border: 1px solid var(--pace-line) !important; color: #627067 !important;
 }
 .directory-tools .filter-selected, .status-filters .filter-selected {
-  background: var(--pace-lime) !important; border-color: var(--pace-lime) !important; color: var(--pace-ink) !important;
+  background: var(--pace-lime) !important; border-color: var(--pace-lime) !important; color: var(--pace-on-lime) !important;
 }
 .athlete-table { overflow: hidden; border-radius: 12px !important; }
 .athlete-table-head { background: #EAF0E3 !important; color: #59684D !important; }
@@ -652,19 +667,59 @@ body, .site { background: var(--pace-canvas) !important; color: var(--pace-ink) 
 .tone-2 { background: #F1EBDD !important; color: #80622D !important; }
 .tone-3 { background: #E9EEDC !important; color: #617A36 !important; }
 .tone-4 { background: #E3ECEC !important; color: #41646A !important; }
-.profile-avatar { background: var(--pace-lime) !important; color: var(--pace-ink) !important; }
+.profile-avatar { background: var(--pace-lime) !important; color: var(--pace-on-lime) !important; }
 .profile-facts { border-top-color: var(--pace-line) !important; }
 .profile-facts small { color: #77837C !important; }
 .profile-facts b { color: var(--pace-ink) !important; }
 .joined-event { border-bottom-color: var(--pace-line) !important; color: var(--pace-ink) !important; }
 .joined-event span:last-child { color: #64852D !important; }
-.footer { background: var(--pace-ink) !important; border-top: 0 !important; color: #B8C3BD !important; }
+.footer { background: var(--pace-brand-surface) !important; border-top: 0 !important; color: #B8C3BD !important; }
 .footer span:first-child { color: var(--pace-lime) !important; }
 .auth-card h1 { color: var(--pace-ink) !important; }
 .auth-card .form-label { color: #53645D !important; }
 .auth-foot { color: #718078 !important; }
 .auth-foot a { color: #63852B !important; }
 .auth-status-note { color: #89948D !important; }
+
+.theme-toggle.MuiIconButton-root { width: 40px; height: 40px; flex: none; }
+.theme-toggle.Mui-focusVisible { outline: 2px solid currentColor; outline-offset: 2px; }
+.appbar .theme-toggle.MuiIconButton-root:hover { background: #ffffff18; }
+
+:root[data-theme="dark"] .overline,
+:root[data-theme="dark"] .auth-foot a,
+:root[data-theme="dark"] .back-link,
+:root[data-theme="dark"] .view-profile { color: var(--pace-accent) !important; }
+:root[data-theme="dark"] .auth-card .form-label,
+:root[data-theme="dark"] .auth-foot,
+:root[data-theme="dark"] .auth-status-note,
+:root[data-theme="dark"] .no-results,
+:root[data-theme="dark"] .athlete-name-cell small { color: var(--pace-muted) !important; }
+:root[data-theme="dark"] .MuiOutlinedInput-root,
+:root[data-theme="dark"] .MuiMenu-paper,
+:root[data-theme="dark"] .MuiPopover-paper {
+  background: var(--pace-inset) !important;
+  color: var(--pace-ink) !important;
+}
+:root[data-theme="dark"] .MuiInputLabel-root { color: var(--pace-muted) !important; }
+:root[data-theme="dark"] .MuiOutlinedInput-notchedOutline { border-color: var(--pace-input-line) !important; }
+:root[data-theme="dark"] .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline,
+:root[data-theme="dark"] .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--pace-accent) !important;
+}
+:root[data-theme="dark"] .MuiMenuItem-root:hover,
+:root[data-theme="dark"] .athlete-row:hover { background: var(--pace-soft) !important; }
+:root[data-theme="dark"] .MuiMenuItem-root.Mui-selected,
+:root[data-theme="dark"] .MuiMenuItem-root.Mui-focusVisible { background: #36503C !important; }
+:root[data-theme="dark"] .athlete-table-head,
+:root[data-theme="dark"] .status-filters .MuiChip-root:not(.filter-selected) {
+  background: var(--pace-inset) !important;
+  color: var(--pace-muted) !important;
+}
+:root[data-theme="dark"] .athlete-row { border-top-color: var(--pace-line) !important; }
+:root[data-theme="dark"] .demo-login-note { background: var(--pace-inset) !important; border-color: var(--pace-line) !important; }
+:root[data-theme="dark"] .demo-login-note b { color: var(--pace-accent) !important; }
+:root[data-theme="dark"] .demo-login-note span,
+:root[data-theme="dark"] .demo-login-note small { color: var(--pace-muted) !important; }
 
 /* Profile surfaces use the same palette; the trophy cabinet remains a deliberate dark showcase. */
 .profile-hero { background: linear-gradient(112deg, #FFFFFF 0%, #F6F8F1 100%) !important; border: 1px solid var(--pace-line) !important; }

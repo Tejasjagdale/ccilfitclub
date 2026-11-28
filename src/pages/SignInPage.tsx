@@ -34,8 +34,11 @@ export default function SignInPage() {
         <Typography color="text.secondary" fontSize={13}>Enter your employee ID to continue to the company events portal.</Typography>
         {(error || connectionError) && <Alert severity="error" sx={{ mt: 2, overflowWrap: 'anywhere' }}>{error || connectionError}</Alert>}
         <Box component="form" onSubmit={submit} sx={{ mt: 3 }}>
-          <Typography className="form-label">Employee ID</Typography>
-          <TextField fullWidth placeholder="e.g. EMP001" size="small" value={employeeId} onChange={event => setEmployeeId(event.target.value.toUpperCase())} required autoFocus autoComplete="username" inputProps={{ maxLength: 32 }} />
+          <Typography component="label" htmlFor="sign-in-employee-id" className="form-label" display="block">Employee ID</Typography>
+          <TextField id="sign-in-employee-id" fullWidth placeholder="e.g. EMP001" size="small" value={employeeId} onChange={event => {
+            setEmployeeId(event.target.value.toUpperCase());
+            setError('');
+          }} required autoFocus autoComplete="username" inputProps={{ maxLength: 32 }} disabled={busy} />
           <Button fullWidth variant="contained" type="submit" disabled={busy} sx={{ mt: 2 }}>{busy ? 'Signing in…' : 'Continue'}</Button>
         </Box>
         {!firebaseEnabled && <Box className="demo-login-note">

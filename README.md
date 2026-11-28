@@ -27,4 +27,4 @@ npm run dev
 
 ## Firebase
 
-Follow [Firebase setup](docs/firebase-setup.md) for Spark, Employee ID sign-in, admin browser enrolment, sample import, and the compact Firestore document layout. Without Firebase configuration the local demo continues to use browser storage.
+Everyone signs in with one ID. Athletes enter their employee ID and the administrator enters the private sign-in ID assigned to the `ADM007` profile. Follow [Firebase setup](docs/firebase-setup.md) to configure the private ID, deploy the rules, and import sample data. Without Firebase configuration the local demo continues to use browser storage.

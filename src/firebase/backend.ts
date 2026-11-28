@@ -46,7 +46,8 @@ export async function restoreSession(): Promise<CloudSession | null> {
   if (!raw) return null;
   try {
     const session = JSON.parse(raw) as CloudSession;
-    if (auth.currentUser?.uid === session.uid) return session;
+    const user = auth.currentUser;
+    if (user?.uid === session.uid && user.isAnonymous) return session;
   } catch {
     // An invalid session cannot authorize data requests.
   }
@@ -57,32 +58,29 @@ export async function restoreSession(): Promise<CloudSession | null> {
 export async function signInEmployee(id: string): Promise<CloudSession> {
   const employeeId = normalizeEmployeeId(id);
   await auth.authStateReady();
-  const user = auth.currentUser ?? (await signInAnonymously(auth)).user;
-  let session: CloudSession;
-  if (employeeId === ADMIN_EMPLOYEE_ID) {
-    let allowed = false;
-    try { allowed = (await getDocFromServer(adminRef)).data()?.uid === user.uid; }
-    catch (error) { if (errorCode(error) !== 'permission-denied') throw error; }
-    if (!allowed) throw new Error(`Admin browser is not enrolled. Browser UID: ${user.uid}`);
-    session = { uid: user.uid, personId: 'u-admin', employeeId, role: 'ADMIN' };
-  } else {
-    const key = employeeKey(employeeId);
-    const person = (await getDocFromServer(employeeRef(key))).data()?.p;
-    if (typeof person !== 'string' || person === 'u-admin') {
-      throw new Error('Employee ID not found. Contact your event administrator.');
-    }
+  const user = auth.currentUser?.isAnonymous ? auth.currentUser : (await signInAnonymously(auth)).user;
+  const key = employeeKey(employeeId);
+  const person = (await getDocFromServer(employeeRef(key))).data()?.p;
+  const invalidIdMessage = 'Employee ID not found. Contact your event administrator.';
+  if (typeof person !== 'string') throw new Error(invalidIdMessage);
+  try {
     await setDoc(accessRef(user.uid), { p: person, k: key });
-    session = { uid: user.uid, personId: person, employeeId, role: 'ATHLETE' };
+  } catch (error) {
+    if (errorCode(error) === 'permission-denied') throw new Error(invalidIdMessage);
+    throw error;
   }
+  const isAdmin = person === 'u-admin';
+  const session: CloudSession = {
+    uid: user.uid, personId: person, employeeId: isAdmin ? ADMIN_EMPLOYEE_ID : employeeId, role: isAdmin ? 'ADMIN' : 'ATHLETE',
+  };
   sessionStorage.setItem(sessionKey, JSON.stringify(session));
   return session;
 }
 
 export async function endSession(session: CloudSession | null) {
   sessionStorage.removeItem(sessionKey);
-  if (session?.role === 'ATHLETE' && auth.currentUser?.uid === session.uid) {
-    await deleteDoc(accessRef(session.uid));
-  }
+  if (!session || auth.currentUser?.uid !== session.uid) return;
+  await deleteDoc(accessRef(session.uid));
 }
 
 export function observeSession(session: CloudSession, receive: (data: AppData) => void, fail: (message: string) => void) {
@@ -105,7 +103,7 @@ export function observeSession(session: CloudSession, receive: (data: AppData) =
   }
 
   const onError = (error: unknown) => fail(errorCode(error) === 'permission-denied'
-    ? 'Firebase denied access. Check your enrollment and deployed rules.'
+    ? 'Your session no longer has access. Sign in again.'
     : 'Unable to load Firebase data. Check the connection and try again.');
   const permissions = session.role === 'ADMIN' ? adminRef : employeeRef(employeeKey(session.employeeId));
   const stops = [
@@ -117,7 +115,7 @@ export function observeSession(session: CloudSession, receive: (data: AppData) =
       ready.add('activity'); emit();
     }, onError),
     onSnapshot(permissions, snapshot => {
-      const allowed = session.role === 'ADMIN' ? snapshot.data()?.uid === session.uid : snapshot.data()?.p === session.personId;
+      const allowed = session.role === 'ADMIN' ? snapshot.exists() : snapshot.data()?.p === session.personId;
       if (!allowed) { if (!snapshot.metadata.fromCache) fail('This browser no longer has access.'); return; }
       ready.add('access'); emit();
     }, onError),

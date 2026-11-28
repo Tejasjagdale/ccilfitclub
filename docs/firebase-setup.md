@@ -3,23 +3,29 @@
 ## Connect a Spark project
 
 1. Create a Firebase project on Spark and register a web app. Copy the web SDK values into a local `.env.local` based on [the example](../.env.example). They are public browser configuration. No service-account file is required. [Firebase web setup](https://firebase.google.com/docs/web/setup)
-2. Create the default **Standard** Cloud Firestore database in production mode. In Authentication, enable **Anonymous** under Sign-in method. The app asks only for Employee ID. [Get started with Firestore](https://firebase.google.com/docs/firestore/quickstart) · [Anonymous authentication](https://firebase.google.com/docs/auth/web/anonymous-auth)
-3. With the Firebase CLI signed into the project owner account, deploy the rules and index exemptions.
+2. Create the default **Standard** Cloud Firestore database in production mode. Enable **Anonymous** in Firebase Authentication so everyone can use the same one-field sign-in form. [Get started with Firestore](https://firebase.google.com/docs/firestore/quickstart)
+3. With the Firebase CLI signed into the project owner account, deploy the rules and index exemptions alongside the updated frontend.
 
    ```sh
    firebase deploy --only firestore:rules,firestore:indexes --project YOUR_PROJECT_ID
    ```
 
-4. Run `npm run dev` and enter `ADM007` on the administrator’s own browser. Copy the **Browser UID** shown by the app. In the Firestore Console, create the document `settings/admin` with one string field named `uid` containing that exact value.
-5. Enter `ADM007` again. On the empty admin dashboard choose **Import sample data**. This loads the original athletes, events, registrations, scores, records, and trophies. Athletes can then open the app on separate devices and enter IDs such as `EMP001`.
+4. Generate a private sign-in ID for the existing `ADM007` profile. Keep it private and share it securely with the administrator.
 
-If the admin switches devices or clears the browser’s Firebase identity, enrol the new browser by replacing the `uid` field. This revokes the old browser’s admin permissions. Keep the enrolled browser on a trusted device. For athletes, knowing another person’s employee ID is enough to act as them. This design is suitable for the current dummy data.
+   ```sh
+   node -p "'ADM-' + require('node:crypto').randomBytes(14).toString('hex').toUpperCase()"
+   ```
+
+5. In Firestore, create the document under `employeeKeys` whose document ID is `id-` followed by the private sign-in ID, with the string field `p` set to `u-admin`. Put that same document ID in the string field `key` of `settings/admin`. Remove the old `uid` field after the new rules are deployed.
+6. Enter the private sign-in ID in the Employee ID field on any device. On an empty admin dashboard, choose **Import sample data** to load the original athletes, events, registrations, scores, records, and trophies. Athletes continue using IDs such as `EMP001`.
+
+To replace a lost or shared admin ID, create a new lookup and point `settings/admin.key` at it. That revokes sessions created with the old ID. Delete the old lookup after switching. For athletes, knowing another person’s employee ID is enough to act as them. This design is suitable for the current dummy data.
 
 Local demo mode runs when the Firebase environment fields are empty. Changes made in the earlier browser-only demo stay there. If you want to host the app on Firebase Hosting, run `npm run build` with the Firebase environment configured, then deploy `hosting` to the same project. The routing rewrite is included in `firebase.json`.
 
 ## Local emulator
 
-Run `firebase emulators:start --only auth,firestore --project demo-offpace` with a supported Java runtime. Start Vite in a second terminal with `VITE_USE_FIREBASE_EMULATORS=true`. Use the same browser UID enrolment against the emulator’s `settings/admin`. Emulator data is separate from the cloud project. [Firestore emulator guide](https://firebase.google.com/docs/emulator-suite/connect_firestore)
+Run `firebase emulators:start --only auth,firestore --project demo-offpace` with a supported Java runtime. Start Vite in a second terminal with `VITE_USE_FIREBASE_EMULATORS=true`. Set up a test private ID and the corresponding lookup and settings documents in the Firestore emulator. Emulator data is separate from the cloud project. [Firebase Auth emulator guide](https://firebase.google.com/docs/emulator-suite/connect_auth)
 
 ## Compact documents
 
@@ -27,7 +33,7 @@ See the [sample JSON](firebase-data.example.json) for the wire shape. The codec 
 
 | Document | Stored data |
 | --- | --- |
-| `settings/admin` | The single enrolled administrator UID |
+| `settings/admin` | Active private sign-in key for the administrator |
 | `core/directory` | Names and compact status codes, with trophy awards under each internal person ID |
 | `core/employeeIds` | Private map of internal person IDs to employee IDs for the admin directory |
 | `employeeKeys/{key}` | One exact-ID lookup for each employee who can sign in. Keys use `id-` plus the URL-encoded uppercase employee ID |

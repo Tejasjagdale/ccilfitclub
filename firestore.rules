@@ -9,7 +9,7 @@ service cloud.firestore {
     }
     function account() { return get(accountPath(request.auth.uid)).data; }
     function activeAdminKey(key) {
-      return key.matches('id-ADM-[0-9A-F]{28}') && get(adminPath()).data.key == key;
+      return get(adminPath()).data.key == key;
     }
     function admin() {
       return anonymous() && account().p == 'u-admin' && activeAdminKey(account().k) &&
